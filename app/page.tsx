@@ -1,0 +1,15 @@
+import Background from "@/components/background";
+import LinkforBio from "@/components/linkforbio";
+import Tabs from "@/components/tabs";
+import Footer from "@/components/footer";
+
+export default function Home() {
+  return (
+    <>
+    <Background/>
+    <LinkforBio/>
+    <Tabs/>
+    <Footer/>
+    </>
+  );
+}
