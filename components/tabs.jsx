@@ -28,18 +28,20 @@ const Tabs = () => {
       <Carousel className="mt-5">
         <CarouselContent>
           <CarouselItem>
+            <div>
               <a 
               href="https://28-jotion-clone.vercel.app/"
-              className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 rounded-3xl  w-full sm:w-[550px]">
+              className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 px-8 rounded-3xl w-full sm:w-[550px]">
                 <h1 className="text-xl font-extrabold">Jotion (Notion Clone) </h1>
                 <h2 className="text-sm font-semibold">Personal Note Taking App</h2>
               </a>
+              </div>
           </CarouselItem>
         </CarouselContent>
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-
+      
       {/* TikTok Tab - Add an anchor link */}
       <div className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 rounded-3xl mt-16 w-full sm:w-[550px] heartbeat">
         <a
