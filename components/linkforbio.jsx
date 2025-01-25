@@ -37,7 +37,7 @@ const LinkforBio = () => {
         </div>
         <div className="absolute bottom-[-40px]">
           <Avatar className="size-20 border ">
-            <AvatarImage src="/pfp.jpg" className="z-1" />
+            <AvatarImage src="https://pin.it/2tDqpof9i" className="z-1" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
