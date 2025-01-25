@@ -50,7 +50,7 @@ const LinkforBio = () => {
 
         <div className="flex flex-row gap-6 mt-6 text-white">
           <a
-            href="https://www.tiktok.com/@jkeroro"
+            href="https://www.tiktok.com/@jkeroromk"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -62,7 +62,7 @@ const LinkforBio = () => {
 
           {/* Instagram Icon */}
           <a
-            href="https://www.instagram.com/jkeroro"
+            href="https://www.instagram.com/jkerorozz"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -74,7 +74,7 @@ const LinkforBio = () => {
 
           {/* YouTube Icon */}
           <a
-            href="https://www.youtube.com/c/jkeroro"
+            href="https://youtube.com/@jkeroro_mk?si=kONouwFGS9t-ti3V"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -86,7 +86,7 @@ const LinkforBio = () => {
 
           {/* Twitch Icon */}
           <a
-            href="https://www.twitch.tv/jkeroro"
+            href="https://www.twitch.tv/jkerorozz"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -110,7 +110,7 @@ const LinkforBio = () => {
 
           {/* SoundCloud Icon */}
           <a
-            href="https://soundcloud.com/jkeroro"
+            href="https://on.soundcloud.com/B1Fe1ewaen6xbNfv9"
             target="_blank"
             rel="noopener noreferrer"
           >
