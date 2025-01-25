@@ -1,5 +1,3 @@
-'use client'
-
 import React from 'react'
 
 const Background = () => {
@@ -10,6 +8,7 @@ const Background = () => {
     autoPlay
     loop
     muted
+    playsInline
     className='object-cover w-full h-full'
     />
     </div>
