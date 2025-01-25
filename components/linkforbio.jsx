@@ -25,7 +25,7 @@ const LinkforBio = () => {
           className="rounded-2xl"
         />
         {/* Buttons on top of the image */}
-        <div className="absolute top-0 flex gap-40 sm:gap-80 mt-3">
+        <div className="absolute top-0 flex gap-36 sm:gap-80 mt-3">
           <Button variant="ghost" className="text-white hover:text-black">
             <Bell />
             Subscribe
@@ -38,7 +38,6 @@ const LinkforBio = () => {
         <div className="absolute bottom-[-40px]">
           <Avatar className="size-20 border ">
             <AvatarImage src="/Pfp.jpg" />
-            <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
       </div>
