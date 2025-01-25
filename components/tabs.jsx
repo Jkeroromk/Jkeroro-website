@@ -6,6 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { BiLeftArrowAlt, BiRightArrowAlt } from "react-icons/bi";
 
 const Tabs = () => {
   return (
@@ -26,10 +27,14 @@ const Tabs = () => {
       <h1 className="flex justify-center text-white font-extrabold text-xl mt-10">
         Personal Project Collection
       </h1>
-      <Carousel
-        className="mt-5 max-w-[270px] sm:max-w-xl"
-        opts={{ loop: true }}
-      >
+      <div className="flex gap-x-2">
+        <BiLeftArrowAlt className="mt-[5px] text-white font-extrabold text-3xl" />
+        <h2 className="flex justify-center text-white font-extrabold text-xl mt-1">
+          Swap me
+        </h2>
+        <BiRightArrowAlt className="mt-[5px] text-white font-extrabold text-3xl" />
+      </div>
+      <Carousel className="mt-5 w-full sm:w-[550px]" opts={{ loop: true }}>
         <CarouselContent>
           <CarouselItem className="flex justify-center">
             <a
@@ -123,7 +128,6 @@ const Tabs = () => {
         <CarouselNext /> */}
       </Carousel>
 
-      {/* TikTok Tab - Add an anchor link */}
       <div className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 rounded-3xl mt-16 w-full sm:w-[550px] heartbeat">
         <a
           href="https://www.tiktok.com/@yourusername"
@@ -131,7 +135,7 @@ const Tabs = () => {
           rel="noopener noreferrer"
           className="flex flex-col items-center"
         >
-          <h1 className="text-xl font-extrabold">TikTok</h1>
+          <h1 className="text-xl font-extrabold">Rednote</h1>
           <h2 className="text-sm font-semibold">Thread</h2>
         </a>
       </div>
