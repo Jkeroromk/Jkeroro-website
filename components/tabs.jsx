@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
   Carousel,
   CarouselContent,
@@ -7,6 +6,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+
 
 const Tabs = () => {
   return (
@@ -23,25 +23,103 @@ const Tabs = () => {
           <h2 className="text-sm font-semibold">Job Only</h2>
         </a>
       </div>
-      
-      <h1 className="flex justify-center text-white font-extrabold text-xl mt-10">Personal Project Collection</h1>
-      <Carousel className="mt-5">
+
+      <h1 className="flex justify-center text-white font-extrabold text-xl mt-10">
+        Personal Project Collection
+      </h1>
+      <Carousel 
+      className="mt-5 max-w-[270px] sm:max-w-xl"
+      >
         <CarouselContent>
-          <CarouselItem>
-            <div>
-              <a 
+          <CarouselItem className="flex justify-center">
+            <a
               href="https://28-jotion-clone.vercel.app/"
-              className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 px-8 rounded-3xl w-full sm:w-[550px]">
-                <h1 className="text-xl font-extrabold">Jotion (Notion Clone) </h1>
-                <h2 className="text-sm font-semibold">Personal Note Taking App</h2>
-              </a>
-              </div>
+              className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 px-8 rounded-3xl w-full sm:w-[550px]"
+            >
+              <h1 className="text-xl font-extrabold">Jotion</h1>
+
+              <h2 className="text-sm font-semibold">
+                Personal Note Taking App (Notion Clone)
+              </h2>
+            </a>
+          </CarouselItem>
+          <CarouselItem className="flex justify-center">
+            <a
+              href="https://28-jotion-clone.vercel.app/"
+              className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 px-8 rounded-3xl w-full sm:w-[550px]"
+            >
+              <h1 className="text-xl font-extrabold">iPhone 15 Pro Website</h1>
+
+              <h2 className="text-sm font-semibold">
+                iPhone Clone Project
+              </h2>
+            </a>
+          </CarouselItem>
+          <CarouselItem className="flex justify-center">
+            <a
+              href="https://28-jotion-clone.vercel.app/"
+              className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 px-8 rounded-3xl w-full sm:w-[550px]"
+            >
+              <h1 className="text-xl font-extrabold">NFT Marketplace Intern</h1>
+
+              <h2 className="text-sm font-semibold">
+                Personal Intern Template
+              </h2>
+            </a>
+          </CarouselItem>
+          <CarouselItem className="flex justify-center">
+            <a
+              href="https://28-jotion-clone.vercel.app/"
+              className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 px-8 rounded-3xl w-full sm:w-[550px]"
+            >
+              <h1 className="text-xl font-extrabold">Spotify API Testing</h1>
+
+              <h2 className="text-sm font-semibold">
+                Personal project Tool
+              </h2>
+            </a>
+          </CarouselItem>
+          <CarouselItem className="flex justify-center">
+            <a
+              href="https://28-jotion-clone.vercel.app/"
+              className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 px-8 rounded-3xl w-full sm:w-[550px]"
+            >
+              <h1 className="text-xl font-extrabold">3D Personal Website Project</h1>
+
+              <h2 className="text-sm font-semibold">
+                Unlock Three Js mileStone
+              </h2>
+            </a>
+          </CarouselItem>
+          <CarouselItem className="flex justify-center">
+            <a
+              href="https://28-jotion-clone.vercel.app/"
+              className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 px-8 rounded-3xl w-full sm:w-[550px]"
+            >
+              <h1 className="text-xl font-extrabold">Treact Website</h1>
+
+              <h2 className="text-sm font-semibold">
+                 Fully Responsive Landing Page
+              </h2>
+            </a>
+          </CarouselItem>
+          <CarouselItem className="flex justify-center">
+            <a
+              href="https://28-jotion-clone.vercel.app/"
+              className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 px-8 rounded-3xl w-full sm:w-[550px]"
+            >
+              <h1 className="text-xl font-extrabold">Libary Bookstore</h1>
+
+              <h2 className="text-sm font-semibold">
+                E-commerces Template
+              </h2>
+            </a>
           </CarouselItem>
         </CarouselContent>
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-      
+
       {/* TikTok Tab - Add an anchor link */}
       <div className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 rounded-3xl mt-16 w-full sm:w-[550px] heartbeat">
         <a
