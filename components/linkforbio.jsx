@@ -1,3 +1,5 @@
+'use client'
+
 import Image from "next/image";
 import React from "react";
 import { Button } from "./ui/button";
@@ -37,7 +39,7 @@ const LinkforBio = () => {
         </div>
         <div className="absolute bottom-[-40px]">
           <Avatar className="size-20 border ">
-            <AvatarImage src="https://pin.it/2tDqpof9i" className="z-1" />
+            <AvatarImage src="/pfp.jpg"/>
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
