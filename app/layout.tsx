@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
+import MouseTrail from '../components/mousetrail'
 
 
 const fredoka = Fredoka({
@@ -26,8 +27,10 @@ export default function RootLayout({
           src="https://kit.fontawesome.com/7db96a5cb9.js"
           crossOrigin="anonymous"
         />
+        <Script src="https://unpkg.com/aos@2.3.1/dist/aos.js"/>
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"></link>
       </head>
-        <body className={`${fredoka.className} antialiased`}>{children}</body>
+        <body className={`${fredoka.className} antialiased`}><MouseTrail/>{children}</body>
     </html>
   );
 }

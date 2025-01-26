@@ -3,10 +3,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
-import { BiLeftArrowAlt, BiRightArrowAlt } from "react-icons/bi";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const Tabs = () => {
   return (
@@ -27,12 +25,12 @@ const Tabs = () => {
       <h1 className="flex justify-center text-white font-extrabold text-xl mt-10">
         Personal Project Collection
       </h1>
-      <div className="flex gap-x-2">
-        <BiLeftArrowAlt className="mt-[5px] text-white font-extrabold text-3xl" />
-        <h2 className="flex justify-center text-white font-extrabold text-xl mt-1">
+      <div className="flex gap-x-3">
+        <ArrowLeft className="text-white mt-3"/>
+        <h2 className="flex justify-center text-white font-extrabold text-xl mt-2">
           Swap me
         </h2>
-        <BiRightArrowAlt className="mt-[5px] text-white font-extrabold text-3xl" />
+        <ArrowRight className="text-white mt-3"/>
       </div>
       <Carousel className="mt-5 w-full sm:w-[550px]" opts={{ loop: true }}>
         <CarouselContent>
@@ -124,8 +122,6 @@ const Tabs = () => {
             </a>
           </CarouselItem>
         </CarouselContent>
-        {/* <CarouselPrevious />
-        <CarouselNext /> */}
       </Carousel>
 
       <div className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-6 rounded-3xl mt-16 w-full sm:w-[550px] heartbeat">
