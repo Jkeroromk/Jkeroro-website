@@ -2,9 +2,21 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 
 const tracks = [
-  { title: 'SPECIALZ (Jujutsu Kaisen)', subtitle: 'Anifi', src: '/SPECIALZ (Jujutsu Kaisen).mp3' },
-  { title: 'Track 2', subtitle: '', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-  { title: 'Track 3', subtitle: '', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+  {
+    title: 'SPECIALZ (Jujutsu Kaisen)',
+    subtitle: 'Anifi',
+    src: '/SPECIALZ (Jujutsu Kaisen).mp3'
+  },
+  {
+    title: 'The Pursuit of Happyness',
+    subtitle: 'Leessang',
+    src: '/Leessang.mp3'
+  },
+  {
+    title: 'Track 3',
+    subtitle: '',
+    src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+  },
 ];
 
 const MusicPlayer = () => {
@@ -16,6 +28,7 @@ const MusicPlayer = () => {
 
   const togglePlayPause = () => {
     const audio = audioRef.current;
+    audio.volume = 0.5;
     if (isPlaying) {
       audio.pause();
     } else {
@@ -40,10 +53,12 @@ const MusicPlayer = () => {
   };
 
   const handleSongEnd = () => {
+    console.log('Song ended!');
     skipTrack(1);
   };
 
   const formatTime = (seconds) => {
+    if (!seconds || isNaN(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
@@ -52,14 +67,14 @@ const MusicPlayer = () => {
   useEffect(() => {
     const audio = audioRef.current;
     audio.addEventListener('timeupdate', handleTimeUpdate);
-    audio.addEventListener('ended', handleSongEnd);
+    // You can remove the 'ended' listener if you're using onEnded prop
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.removeEventListener('ended', handleSongEnd);
     };
   }, []);
 
   useEffect(() => {
+    // Auto-play the newly loaded track if isPlaying is still true
     const audio = audioRef.current;
     if (isPlaying) {
       audio.play().catch((error) => {
@@ -70,30 +85,52 @@ const MusicPlayer = () => {
 
   return (
     <div className="flex flex-col items-center justify-center mt-10 w-full">
-      <audio ref={audioRef} src={tracks[currentTrackIndex].src} />
+      {/* Use the onEnded prop */}
+      <audio
+        ref={audioRef}
+        src={tracks[currentTrackIndex].src}
+        onEnded={handleSongEnd}
+      />
       <div className="flex flex-col items-center bg-opacity-70 p-6 rounded-lg w-72 text-white">
-        <h3 className="mb-2 text-xl font-bold">{tracks[currentTrackIndex].title}</h3>
+        <h3 className="mb-2 text-xl font-bold">
+          {tracks[currentTrackIndex].title}
+        </h3>
         {tracks[currentTrackIndex].subtitle && (
-          <p className="text-sm text-gray-300 mb-5">{tracks[currentTrackIndex].subtitle}</p>
+          <p className="text-sm text-gray-300 mb-5">
+            {tracks[currentTrackIndex].subtitle}
+          </p>
         )}
         <div className="flex justify-between w-full mb-5">
-          <SkipBack onClick={() => skipTrack(-1)} className="cursor-pointer text-white text-2xl" />
-          <div onClick={togglePlayPause} className="cursor-pointer text-white text-2xl">
+          <SkipBack
+            onClick={() => skipTrack(-1)}
+            className="cursor-pointer text-white text-2xl"
+          />
+          <div
+            onClick={togglePlayPause}
+            className="cursor-pointer text-white text-2xl"
+          >
             {isPlaying ? <Pause /> : <Play />}
           </div>
-          <SkipForward onClick={() => skipTrack(1)} className="cursor-pointer text-white text-2xl" />
+          <SkipForward
+            onClick={() => skipTrack(1)}
+            className="cursor-pointer text-white text-2xl"
+          />
         </div>
         <div className="w-full flex flex-col items-center mb-2 mt-2">
           <input
             type="range"
             min="0"
-            max={duration}
-            value={currentTime}
-            onChange={(e) => audioRef.current.currentTime = e.target.value}
+            max={duration || 0}
+            value={currentTime || 0}
+            onChange={(e) => {
+              audioRef.current.currentTime = e.target.value;
+            }}
             className="w-full mb-2"
             style={{
               appearance: 'none',
-              background: `linear-gradient(to right, #4a4a4a ${((currentTime / duration) * 100)}%, #e0e0e0 0%)`,
+              background: `linear-gradient(to right, #4a4a4a ${
+                (duration ? (currentTime / duration) * 100 : 0)
+              }%, #e0e0e0 0%)`,
               height: '8px',
               borderRadius: '5px',
             }}
