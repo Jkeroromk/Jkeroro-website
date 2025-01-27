@@ -18,7 +18,7 @@ const Album = () => {
           width={550}
           height={400}
           className="rounded-2xl scale-90 sm:scale-100 sm:mb-5"
-          priority={index === 0} // Preload the first image
+          priority
         />
       ))}
     </div>
@@ -26,3 +26,4 @@ const Album = () => {
 };
 
 export default Album;
+
