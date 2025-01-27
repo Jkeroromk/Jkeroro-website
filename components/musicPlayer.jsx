@@ -1,22 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+'use client'
+
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 
 const tracks = [
-  {
-    title: 'SPECIALZ (Jujutsu Kaisen)',
-    subtitle: 'Anifi',
-    src: '/SPECIALZ (Jujutsu Kaisen).mp3'
-  },
-  {
-    title: 'The Pursuit of Happyness',
-    subtitle: 'Leessang',
-    src: '/Leessang.mp3'
-  },
-  {
-    title: 'Track 3',
-    subtitle: '',
-    src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
-  },
+  { title: 'SPECIALZ (Jujutsu Kaisen)', subtitle: 'Anifi', src: '/SPECIALZ (Jujutsu Kaisen).mp3' },
+  { title: 'The Pursuit of Happyness', subtitle: 'Leessang', src: '/Leessang.mp3' },
+  { title: 'Track 3', subtitle: '', src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
 ];
 
 const MusicPlayer = () => {
@@ -26,7 +16,7 @@ const MusicPlayer = () => {
   const [duration, setDuration] = useState(0);
   const audioRef = useRef(null);
 
-  const togglePlayPause = () => {
+  const togglePlayPause = useCallback(() => {
     const audio = audioRef.current;
     audio.volume = 0.5;
     if (isPlaying) {
@@ -37,25 +27,25 @@ const MusicPlayer = () => {
       });
     }
     setIsPlaying(!isPlaying);
-  };
+  }, [isPlaying]);
 
-  const skipTrack = (direction) => {
+  const skipTrack = useCallback((direction) => {
     let newIndex = currentTrackIndex + direction;
     if (newIndex < 0) newIndex = tracks.length - 1;
     if (newIndex >= tracks.length) newIndex = 0;
     setCurrentTrackIndex(newIndex);
-  };
+  }, [currentTrackIndex]);
 
-  const handleTimeUpdate = () => {
+  const handleTimeUpdate = useCallback(() => {
     const audio = audioRef.current;
     setCurrentTime(audio.currentTime);
     setDuration(audio.duration);
-  };
+  }, []);
 
-  const handleSongEnd = () => {
+  const handleSongEnd = useCallback(() => {
     console.log('Song ended!');
     skipTrack(1);
-  };
+  }, [skipTrack]);
 
   const formatTime = (seconds) => {
     if (!seconds || isNaN(seconds)) return '0:00';
@@ -67,15 +57,23 @@ const MusicPlayer = () => {
   useEffect(() => {
     const audio = audioRef.current;
     audio.addEventListener('timeupdate', handleTimeUpdate);
-    // You can remove the 'ended' listener if you're using onEnded prop
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
     };
-  }, []);
+  }, [handleTimeUpdate]);
 
   useEffect(() => {
-    // Auto-play the newly loaded track if isPlaying is still true
     const audio = audioRef.current;
+    if (isPlaying) {
+      audio.play().catch((error) => {
+        console.error('Error attempting to play audio:', error);
+      });
+    }
+  }, [currentTrackIndex, isPlaying]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    audio.load();
     if (isPlaying) {
       audio.play().catch((error) => {
         console.error('Error attempting to play audio:', error);
@@ -85,36 +83,23 @@ const MusicPlayer = () => {
 
   return (
     <div className="flex flex-col items-center justify-center mt-10 w-full">
-      {/* Use the onEnded prop */}
       <audio
         ref={audioRef}
         src={tracks[currentTrackIndex].src}
+        preload="none" // Prevents preloading
         onEnded={handleSongEnd}
       />
       <div className="flex flex-col items-center bg-opacity-70 p-6 rounded-lg w-72 text-white">
-        <h3 className="mb-2 text-xl font-bold">
-          {tracks[currentTrackIndex].title}
-        </h3>
+        <h3 className="mb-2 text-xl font-bold">{tracks[currentTrackIndex].title}</h3>
         {tracks[currentTrackIndex].subtitle && (
-          <p className="text-sm text-gray-300 mb-5">
-            {tracks[currentTrackIndex].subtitle}
-          </p>
+          <p className="text-sm text-gray-300 mb-5">{tracks[currentTrackIndex].subtitle}</p>
         )}
         <div className="flex justify-between w-full mb-5">
-          <SkipBack
-            onClick={() => skipTrack(-1)}
-            className="cursor-pointer text-white text-2xl"
-          />
-          <div
-            onClick={togglePlayPause}
-            className="cursor-pointer text-white text-2xl"
-          >
+          <SkipBack onClick={() => skipTrack(-1)} className="cursor-pointer text-white text-2xl" />
+          <div onClick={togglePlayPause} className="cursor-pointer text-white text-2xl">
             {isPlaying ? <Pause /> : <Play />}
           </div>
-          <SkipForward
-            onClick={() => skipTrack(1)}
-            className="cursor-pointer text-white text-2xl"
-          />
+          <SkipForward onClick={() => skipTrack(1)} className="cursor-pointer text-white text-2xl" />
         </div>
         <div className="w-full flex flex-col items-center mb-2 mt-2">
           <input
@@ -122,14 +107,12 @@ const MusicPlayer = () => {
             min="0"
             max={duration || 0}
             value={currentTime || 0}
-            onChange={(e) => {
-              audioRef.current.currentTime = e.target.value;
-            }}
+            onChange={(e) => (audioRef.current.currentTime = e.target.value)}
             className="w-full mb-2"
             style={{
               appearance: 'none',
               background: `linear-gradient(to right, #4a4a4a ${
-                (duration ? (currentTime / duration) * 100 : 0)
+                duration ? (currentTime / duration) * 100 : 0
               }%, #e0e0e0 0%)`,
               height: '8px',
               borderRadius: '5px',
