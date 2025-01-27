@@ -30,7 +30,7 @@ const LinkforBio = memo(() => {
           priority
         />
         {/* Buttons on top of the image */}
-        <div className="absolute top-0 flex items-center justify-center gap-8 mt-3">
+        <div className="absolute top-0 flex items-center justify-center gap-80 mt-3">
           <Button variant="ghost" className="text-white hover:text-black flex items-center">
             <Bell className="mr-2" />
             Subscribe
