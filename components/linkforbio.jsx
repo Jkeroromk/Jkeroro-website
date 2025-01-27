@@ -27,7 +27,7 @@ const LinkforBio = () => {
           className="rounded-2xl"
         />
         {/* Buttons on top of the image */}
-        <div className="absolute top-0 flex gap-36 sm:gap-80 mt-3">
+        <div className="absolute top-0 flex gap-[135px] sm:gap-80 mt-3">
           <Button variant="ghost" className="text-white hover:text-black">
             <Bell />
             Subscribe

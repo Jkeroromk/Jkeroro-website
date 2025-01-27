@@ -8,7 +8,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const Tabs = () => {
   return (
-    <div className="mt-10 flex flex-col justify-center items-center w-full px-4 z-10">
+    <div className="mt-2 flex flex-col justify-center items-center w-full px-4 z-10">
       {/* Personal Cv Tab - Add an anchor link */}
       <div className="flex flex-col items-center bg-white bg-opacity-40 border-2 border-black py-4 rounded-3xl mt-10 w-full sm:w-[550px] animate-bounce">
         <a

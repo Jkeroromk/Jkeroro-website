@@ -124,3 +124,7 @@ body, html {
   scroll-behavior: smooth;
   cursor: none;
 }
+
+* {
+  cursor: none !important; /* Override pointer cursor */
+}

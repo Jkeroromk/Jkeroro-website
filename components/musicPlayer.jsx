@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Shuffle, Repeat } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 
 const tracks = [
   { title: 'SPECIALZ (Jujutsu Kaisen)', subtitle: 'Anifi', src: '/SPECIALZ (Jujutsu Kaisen).mp3' },
@@ -10,9 +10,6 @@ const tracks = [
 const MusicPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [volume, setVolume] = useState(100);
-  const [isLoop, setIsLoop] = useState(false);
-  const [isRandom, setIsRandom] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef(null);
@@ -22,7 +19,9 @@ const MusicPlayer = () => {
     if (isPlaying) {
       audio.pause();
     } else {
-      audio.play();
+      audio.play().catch((error) => {
+        console.error('Error attempting to play audio:', error);
+      });
     }
     setIsPlaying(!isPlaying);
   };
@@ -34,32 +33,16 @@ const MusicPlayer = () => {
     setCurrentTrackIndex(newIndex);
   };
 
-  const handleVolumeChange = (e) => {
-    const volumeValue = e.target.value;
-    audioRef.current.volume = volumeValue / 100;
-    setVolume(volumeValue);
-  };
-
-  const handleRandomize = () => {
-    const randomIndex = Math.floor(Math.random() * tracks.length);
-    setCurrentTrackIndex(randomIndex);
-    setIsRandom(!isRandom);
-  };
-
-  const handleLoop = () => {
-    const loop = !isLoop;
-    audioRef.current.loop = loop;
-    setIsLoop(loop);
-  };
-
-  // Update the current time and duration
   const handleTimeUpdate = () => {
     const audio = audioRef.current;
     setCurrentTime(audio.currentTime);
     setDuration(audio.duration);
   };
 
-  // Format time into mm:ss format
+  const handleSongEnd = () => {
+    skipTrack(1);
+  };
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
@@ -69,24 +52,30 @@ const MusicPlayer = () => {
   useEffect(() => {
     const audio = audioRef.current;
     audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleSongEnd);
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleSongEnd);
     };
   }, []);
 
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (isPlaying) {
+      audio.play().catch((error) => {
+        console.error('Error attempting to play audio:', error);
+      });
+    }
+  }, [currentTrackIndex, isPlaying]);
+
   return (
-    <div className="flex flex-col items-center justify-center mt-10">
+    <div className="flex flex-col items-center justify-center mt-10 w-full">
       <audio ref={audioRef} src={tracks[currentTrackIndex].src} />
       <div className="flex flex-col items-center bg-opacity-70 p-6 rounded-lg w-72 text-white">
-        {/* Track Title */}
         <h3 className="mb-2 text-xl font-bold">{tracks[currentTrackIndex].title}</h3>
-
-        {/* Track Subtitle (artist or singer name) */}
         {tracks[currentTrackIndex].subtitle && (
           <p className="text-sm text-gray-300 mb-5">{tracks[currentTrackIndex].subtitle}</p>
         )}
-
-        {/* Play / Pause and Skip Controls */}
         <div className="flex justify-between w-full mb-5">
           <SkipBack onClick={() => skipTrack(-1)} className="cursor-pointer text-white text-2xl" />
           <div onClick={togglePlayPause} className="cursor-pointer text-white text-2xl">
@@ -94,9 +83,7 @@ const MusicPlayer = () => {
           </div>
           <SkipForward onClick={() => skipTrack(1)} className="cursor-pointer text-white text-2xl" />
         </div>
-
-        {/* Progress Bar */}
-        <div className="w-full flex flex-col items-center mb-5">
+        <div className="w-full flex flex-col items-center mb-2 mt-2">
           <input
             type="range"
             min="0"
@@ -104,24 +91,17 @@ const MusicPlayer = () => {
             value={currentTime}
             onChange={(e) => audioRef.current.currentTime = e.target.value}
             className="w-full mb-2"
+            style={{
+              appearance: 'none',
+              background: `linear-gradient(to right, #4a4a4a ${((currentTime / duration) * 100)}%, #e0e0e0 0%)`,
+              height: '8px',
+              borderRadius: '5px',
+            }}
           />
           <div className="flex justify-between w-full text-sm text-white">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
-        </div>
-
-        {/* Volume Control - Moved closer to progress bar */}
-        <div className="flex flex-row items-center w-full mb-5">
-          <Volume2 className="cursor-pointer text-white text-2xl" />
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={volume}
-            onChange={handleVolumeChange}
-            className="ml-2 w-2/6"
-          />
         </div>
       </div>
     </div>
