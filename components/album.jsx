@@ -9,21 +9,21 @@ const Album = () => {
         alt='album' 
         width={550}
         height={400}
-        className='rounded-2xl mb-1 scale-90 sm:scale-100'
+        className='rounded-2xl scale-90 sm:scale-100 sm:mb-5'
         />
         <Image
         src='/lego-car.jpg'
         alt='album'
         width={550}
         height={400}
-        className='rounded-2xl mb-1 scale-90 sm:scale-100'
+        className='rounded-2xl scale-90 sm:scale-100 sm:mb-5'
         />
         <Image
         src='/coffee.jpg'
         alt='album'
         width={550}
         height={400}
-        className='rounded-2xl mb-1 scale-90 sm:scale-100'
+        className='rounded-2xl scale-90 sm:scale-100 sm:mb-5'
         />
     </div>
   )
