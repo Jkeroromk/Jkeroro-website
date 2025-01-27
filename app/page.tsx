@@ -1,4 +1,3 @@
-"use client";
 
 import LinkforBio from "@/components/linkforbio";
 import Tabs from "@/components/tabs";

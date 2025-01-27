@@ -36,6 +36,7 @@ export default function RootLayout({
           src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"
           strategy="beforeInteractive"
         />
+        <link rel="preload" as="image" href="/pfp.jpg"></link>
       </head>
       <body className={`${fredoka.className} antialiased`}>
         <VantaBackground />
