@@ -3,27 +3,27 @@ import React from 'react'
 
 const Album = () => {
   return (
-    <div className='flex flex-col items-center justify-center mt-10'>
+    <div className='flex flex-col items-center justify-center mt-10 '>
         <Image
         src='/Room.jpg'
-        alt='album'
+        alt='album' 
         width={550}
         height={400}
-        className='rounded-3xl mb-8'
+        className='rounded-2xl mb-1 scale-90 sm:scale-100'
         />
         <Image
         src='/lego-car.jpg'
         alt='album'
         width={550}
         height={400}
-        className='rounded-3xl mb-8'
+        className='rounded-2xl mb-1 scale-90 sm:scale-100'
         />
         <Image
         src='/coffee.jpg'
         alt='album'
         width={550}
         height={400}
-        className='rounded-3xl mb-8'
+        className='rounded-2xl mb-1 scale-90 sm:scale-100'
         />
     </div>
   )
