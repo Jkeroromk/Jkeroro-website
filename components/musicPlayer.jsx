@@ -23,8 +23,8 @@ const MusicPlayer = () => {
     if (allow) {
       const audio = audioRef.current;
       audio.muted = false; // Unmute the audio
+      setIsPlaying(true);  // Set playing state to true
       audio.play().catch((error) => console.error('Error playing audio:', error));
-      setIsPlaying(true);
     }
     setShowPermissionPrompt(false); // Hide the prompt
   };
@@ -42,6 +42,7 @@ const MusicPlayer = () => {
   const skipTrack = (direction) => {
     const newIndex = (currentTrackIndex + direction + tracks.length) % tracks.length;
     setCurrentTrackIndex(newIndex);
+    setIsPlaying(true); // Automatically play the next track when skipped
   };
 
   const handleTimeUpdate = () => {
@@ -86,7 +87,8 @@ const MusicPlayer = () => {
   useEffect(() => {
     const audio = audioRef.current;
     audio.src = tracks[currentTrackIndex].src;
-    setIsPlaying(false); // Ensure it doesn't autoplay on track change
+    setIsPlaying(true); // Start playing the new track immediately when the track index changes
+    audio.play().catch((error) => console.error('Error playing audio:', error)); // Play the track right away
   }, [currentTrackIndex]);
 
   return (
@@ -127,11 +129,11 @@ const MusicPlayer = () => {
 
         {/* Playback Controls */}
         <div className="flex justify-between w-full mb-5">
-          <SkipBack onClick={() => skipTrack(-1)} className="cursor-pointer text-white text-2xl" />
-          <div onClick={togglePlayPause} className="cursor-pointer text-white text-2xl">
+          <SkipBack onClick={() => skipTrack(-1)} className="cursor-pointer text-white text-2xl  hover:scale-[1.5] transition duration-300" />
+          <div onClick={togglePlayPause} className="cursor-pointer text-white text-2xl  hover:scale-[1.5] transition duration-300">
             {isPlaying ? <Pause /> : <Play />}
           </div>
-          <SkipForward onClick={() => skipTrack(1)} className="cursor-pointer text-white text-2xl" />
+          <SkipForward onClick={() => skipTrack(1)} className="cursor-pointer text-white text-2xl  hover:scale-[1.5] transition duration-300" />
         </div>
 
         {/* Progress Bar */}
@@ -163,7 +165,7 @@ const MusicPlayer = () => {
         {/* Volume Controls */}
         <div className="items-center justify-center gap-3 mt-5 hidden sm:flex">
           <Minus
-            className="cursor-pointer text-white text-xl"
+            className="cursor-pointer text-white text-xl hover:scale-[1.5] transition duration-300"
             onPointerDown={() => changeVolume(-5)} // Works for mobile and desktop
             title="Decrease Volume"
           />
@@ -181,7 +183,7 @@ const MusicPlayer = () => {
           <div className="flex items-center gap-3">
             <span className="text-white font-bold">{isMuted ? '0' : volume}</span>
             <Plus
-              className="cursor-pointer text-white text-xl"
+              className="cursor-pointer text-white text-xl  hover:scale-[1.5] transition duration-300"
               onPointerDown={() => changeVolume(5)} // Works for mobile and desktop
               title="Increase Volume"
             />

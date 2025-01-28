@@ -56,7 +56,7 @@ const LinkforBio = () => {
           >
             <FaTiktok
               size={25}
-              className="hover:scale-125 transform transition-transform duration-300"
+              className="hover:scale-[2.0] transform transition-transform duration-300"
             />
           </a>
 
@@ -68,7 +68,7 @@ const LinkforBio = () => {
           >
             <FaInstagram
               size={25}
-              className="hover:scale-125 transform transition-transform duration-300"
+              className="hover:scale-[2.0] transform transition-transform duration-300"
             />
           </a>
 
@@ -80,7 +80,7 @@ const LinkforBio = () => {
           >
             <FaYoutube
               size={25}
-              className="hover:scale-125 transform transition-transform duration-300"
+              className="hover:scale-[2.0] transform transition-transform duration-300"
             />
           </a>
 
@@ -92,7 +92,7 @@ const LinkforBio = () => {
           >
             <FaTwitch
               size={25}
-              className="hover:scale-125 transform transition-transform duration-300"
+              className="hover:scale-[2.0] transform transition-transform duration-300"
             />
           </a>
 
@@ -104,7 +104,7 @@ const LinkforBio = () => {
           >
             <FaSpotify
               size={25}
-              className="hover:scale-125 transform transition-transform duration-300"
+              className="hover:scale-[2.0] transform transition-transform duration-300"
             />
           </a>
 
@@ -116,7 +116,7 @@ const LinkforBio = () => {
           >
             <FaSoundcloud
               size={25}
-              className="hover:scale-125 transform transition-transform duration-300"
+              className="hover:scale-[2.0] transform transition-transform duration-300"
             />
           </a>
         </div>
