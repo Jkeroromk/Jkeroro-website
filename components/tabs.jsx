@@ -129,7 +129,7 @@ const Tabs = () => {
           </CarouselContent>
         </Carousel>
       <a
-        href="https://www.tiktok.com/@yourusername"
+        href="https://www.xiaohongshu.com/user/profile/678e5f43000000000e0107ac?xsec_token=YBoDy4ooZI5wbVMGN9VSpV7OGN88SSTRIr5QQntEv1awY=&xsec_source=app_share&xhsshare=CopyLink&appuid=678e5f43000000000e0107ac&apptime=1738075633&share_id=d3e00f56b0ba47ecb739975076b7eb34"
         target="_blank"
         rel="noopener noreferrer"
         className="flex flex-col items-center w-full"
@@ -145,7 +145,7 @@ const Tabs = () => {
       </a>
 
       <a
-        href="https://discord.gg/yourdiscordlink"
+        href="https://discord.gg/eD7ZRcg22H"
         target="_blank"
         rel="noopener noreferrer"
         className="flex flex-col items-center w-full"
