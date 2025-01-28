@@ -14,7 +14,7 @@ const MusicPlayer = () => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(50);
+  const [volume, setVolume] = useState(50); // Default volume level
   const [isMuted, setIsMuted] = useState(false);
   const [showPermissionPrompt, setShowPermissionPrompt] = useState(true); // Show the prompt initially
   const audioRef = useRef(null);
@@ -57,6 +57,7 @@ const MusicPlayer = () => {
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
+  // Volume and Mute Control
   const toggleMute = () => {
     const audio = audioRef.current;
     audio.volume = isMuted ? volume / 100 : 0;
@@ -72,7 +73,7 @@ const MusicPlayer = () => {
 
   useEffect(() => {
     const audio = audioRef.current;
-    audio.volume = volume / 100;
+    audio.volume = volume / 100; // Set initial volume
     audio.addEventListener('timeupdate', handleTimeUpdate);
 
     return () => audio.removeEventListener('timeupdate', handleTimeUpdate);
@@ -109,14 +110,18 @@ const MusicPlayer = () => {
         </div>
       )}
 
-      <audio ref={audioRef} src={tracks[currentTrackIndex].src} muted onEnded={() => skipTrack(1)} />
+      {/* Audio Element */}
+      <audio ref={audioRef} src={tracks[currentTrackIndex].src} muted={isMuted} onEnded={() => skipTrack(1)} />
 
+      {/* Player UI */}
       <div className="flex flex-col items-center bg-opacity-70 p-6 rounded-lg w-72 text-white">
+        {/* Track Info */}
         <h3 className="mb-2 text-xl font-bold">{tracks[currentTrackIndex].title}</h3>
         {tracks[currentTrackIndex].subtitle && (
           <p className="text-sm text-gray-300 mb-5">{tracks[currentTrackIndex].subtitle}</p>
         )}
 
+        {/* Playback Controls */}
         <div className="flex justify-between w-full mb-5">
           <SkipBack onClick={() => skipTrack(-1)} className="cursor-pointer text-white text-2xl" />
           <div onClick={togglePlayPause} className="cursor-pointer text-white text-2xl">
@@ -125,6 +130,7 @@ const MusicPlayer = () => {
           <SkipForward onClick={() => skipTrack(1)} className="cursor-pointer text-white text-2xl" />
         </div>
 
+        {/* Progress Bar */}
         <div className="w-full flex flex-col items-center mb-2 mt-2">
           <input
             type="range"
@@ -147,6 +153,34 @@ const MusicPlayer = () => {
           <div className="flex justify-between w-full text-sm text-white">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
+          </div>
+        </div>
+
+        {/* Volume Controls */}
+        <div className="items-center justify-center gap-3 mt-5 hidden sm:flex">
+          <Minus
+            className="cursor-pointer text-white text-xl"
+            onPointerDown={() => changeVolume(-5)} // Works for mobile and desktop
+            title="Decrease Volume"
+          />
+          <div
+            className="flex flex-col items-center cursor-pointer"
+            onPointerDown={toggleMute} // Works for mobile and desktop
+            title={isMuted ? 'Unmute' : 'Mute'}
+          >
+            {isMuted ? (
+              <VolumeX className="text-white text-xl" />
+            ) : (
+              <Volume2 className="text-white text-xl" />
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-white font-bold">{isMuted ? '0' : volume}</span>
+            <Plus
+              className="cursor-pointer text-white text-xl"
+              onPointerDown={() => changeVolume(5)} // Works for mobile and desktop
+              title="Increase Volume"
+            />
           </div>
         </div>
       </div>
