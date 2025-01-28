@@ -75,9 +75,13 @@ const MusicPlayer = () => {
     const audio = audioRef.current;
     audio.volume = volume / 100; // Set initial volume
     audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', () => skipTrack(1)); // Skip to next track when current one ends
 
-    return () => audio.removeEventListener('timeupdate', handleTimeUpdate);
-  }, [volume]);
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', () => skipTrack(1));
+    };
+  }, [volume, currentTrackIndex]);
 
   useEffect(() => {
     const audio = audioRef.current;
