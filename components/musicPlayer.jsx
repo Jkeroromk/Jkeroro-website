@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Minus, Plus } from 'lucide-react';
@@ -10,13 +10,24 @@ const tracks = [
 ];
 
 const MusicPlayer = () => {
-  const [isPlaying, setIsPlaying] = useState(true); // Default to true for auto-play
+  const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(50); // Default volume level
+  const [volume, setVolume] = useState(50);
   const [isMuted, setIsMuted] = useState(false);
+  const [showPermissionPrompt, setShowPermissionPrompt] = useState(true); // Show the prompt initially
   const audioRef = useRef(null);
+
+  const handlePermissionResponse = (allow) => {
+    if (allow) {
+      const audio = audioRef.current;
+      audio.muted = false; // Unmute the audio
+      audio.play().catch((error) => console.error('Error playing audio:', error));
+      setIsPlaying(true);
+    }
+    setShowPermissionPrompt(false); // Hide the prompt
+  };
 
   const togglePlayPause = () => {
     const audio = audioRef.current;
@@ -61,30 +72,44 @@ const MusicPlayer = () => {
 
   useEffect(() => {
     const audio = audioRef.current;
-    audio.volume = volume / 100; 
+    audio.volume = volume / 100;
     audio.addEventListener('timeupdate', handleTimeUpdate);
 
-    
-    if (isPlaying) {
-      audio.play().catch((error) => console.error('Auto-play error:', error));
-    }
-
     return () => audio.removeEventListener('timeupdate', handleTimeUpdate);
-  }, [volume, isPlaying]);
+  }, [volume]);
 
   useEffect(() => {
     const audio = audioRef.current;
     audio.src = tracks[currentTrackIndex].src;
-
-    // Auto-play on track change
-    if (isPlaying) {
-      audio.play().catch((error) => console.error('Auto-play error on track change:', error));
-    }
-  }, [currentTrackIndex, isPlaying]);
+    setIsPlaying(false); // Ensure it doesn't autoplay on track change
+  }, [currentTrackIndex]);
 
   return (
     <div className="flex flex-col items-center justify-center mt-10 w-full">
-      <audio ref={audioRef} src={tracks[currentTrackIndex].src} onEnded={() => skipTrack(1)} />
+      {showPermissionPrompt && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 className="text-lg font-bold mb-4">Allow Audio Playback</h2>
+            <p className="mb-4">This website requires audio playback to continue. Would you like to enable sound?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => handlePermissionResponse(true)}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+              >
+                Allow
+              </button>
+              <button
+                onClick={() => handlePermissionResponse(false)}
+                className="bg-red-300 text-black px-4 py-2 rounded-lg"
+              >
+                Decline
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <audio ref={audioRef} src={tracks[currentTrackIndex].src} muted onEnded={() => skipTrack(1)} />
 
       <div className="flex flex-col items-center bg-opacity-70 p-6 rounded-lg w-72 text-white">
         <h3 className="mb-2 text-xl font-bold">{tracks[currentTrackIndex].title}</h3>
@@ -122,33 +147,6 @@ const MusicPlayer = () => {
           <div className="flex justify-between w-full text-sm text-white">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
-          </div>
-        </div>
-
-        <div className="items-center justify-center gap-3 mt-5 hidden sm:flex">
-          <Minus
-            className="cursor-pointer text-white text-xl"
-            onPointerDown={() => changeVolume(-5)}
-            title="Decrease Volume"
-          />
-          <div
-            className="flex flex-col items-center cursor-pointer"
-            onPointerDown={toggleMute}
-            title={isMuted ? 'Unmute' : 'Mute'}
-          >
-            {isMuted ? (
-              <VolumeX className="text-white text-xl" />
-            ) : (
-              <Volume2 className="text-white text-xl" />
-            )}
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-white font-bold">{isMuted ? '0' : volume}</span>
-            <Plus
-              className="cursor-pointer text-white text-xl"
-              onPointerDown={() => changeVolume(5)}
-              title="Increase Volume"
-            />
           </div>
         </div>
       </div>
