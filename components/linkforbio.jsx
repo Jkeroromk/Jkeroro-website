@@ -1,10 +1,10 @@
-'use client';
+'use client'
 
 import Image from "next/image";
-import React, { useState, memo } from "react";
+import React from "react";
 import { Button } from "./ui/button";
 import { Bell, Share } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   FaTiktok,
   FaInstagram,
@@ -14,113 +14,115 @@ import {
   FaSoundcloud,
 } from "react-icons/fa";
 
-const LinkforBio = memo(() => {
-  const [isLoading, setIsLoading] = useState(true);
-
+const LinkforBio = () => {
   return (
     <>
-      <section className="relative flex flex-col items-center mt-8 mx-4">
-        {/* Header Image */}
+      <div className="relative flex flex-col items-center mt-8 mx-4">
+        {/* Image */}
         <Image
           src="/header.webp"
           alt="header"
           height={600}
           width={600}
           className="rounded-2xl"
-          priority
         />
         {/* Buttons on top of the image */}
-        <div className="absolute top-0 flex items-center justify-center gap-80 mt-3">
-          <Button variant="ghost" className="text-white hover:text-black flex items-center">
-            <Bell className="mr-2" />
+        <div className="absolute top-0 flex gap-[130px] sm:gap-80 mt-3">
+          <Button variant="ghost" className="text-white hover:text-black">
+            <Bell />
             Subscribe
           </Button>
-          <Button variant="ghost" className="text-white hover:text-black flex items-center">
-            <Share className="mr-2" />
+          <Button variant="ghost" className="text-white hover:text-black">
+            <Share />
             Share
           </Button>
         </div>
-        {/* Avatar with Skeleton Fallback */}
-        <div className="relative mt-[-40px]">
-          <Avatar className="size-20 border w-[80px] h-[80px]">
-            <AvatarImage
-              src="/pfp.jpg"
-              alt="Avatar"
-              onLoad={() => setIsLoading(false)}
-              className={`transition-opacity duration-300 ${isLoading ? "opacity-0" : "opacity-100"}`}
-            />
-            <AvatarFallback>
-              {isLoading && (
-                <div className="animate-pulse flex items-center justify-center bg-gray-300 rounded-full w-full h-full">
-                  <div className="w-[40px] h-[40px] bg-gray-400 rounded-full"></div>
-                </div>
-              )}
-            </AvatarFallback>
+        <div className="absolute bottom-[-40px]">
+          <Avatar className="size-20 border ">
+            <AvatarImage src="/pfp.jpg"/>
+            <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
-      </section>
-      <section className="flex flex-col items-center mt-12">
+      </div>
+      <div className="flex flex-col items-center mt-12">
         <h1 className="text-white font-extrabold text-2xl">Jkeroro</h1>
         <h2 className="text-white font-semibold text-sm"> CN ‍✈️ HK ‍✈️ US </h2>
-        <div className="flex gap-6 mt-6 text-white group">
+
+        <div className="flex flex-row gap-6 mt-6 text-white">
           <a
             href="https://www.tiktok.com/@jkeroromk"
             target="_blank"
-            rel="noopener noreferrer prefetch"
-            aria-label="Visit Jkeroro on TikTok"
-            className="group-hover:scale-125 transform transition-transform duration-300"
+            rel="noopener noreferrer"
           >
-            <FaTiktok size={25} />
+            <FaTiktok
+              size={25}
+              className="hover:scale-125 transform transition-transform duration-300"
+            />
           </a>
+
+          {/* Instagram Icon */}
           <a
             href="https://www.instagram.com/jkerorozz"
             target="_blank"
-            rel="noopener noreferrer prefetch"
-            aria-label="Visit Jkeroro on Instagram"
-            className="group-hover:scale-125 transform transition-transform duration-300"
+            rel="noopener noreferrer"
           >
-            <FaInstagram size={25} />
+            <FaInstagram
+              size={25}
+              className="hover:scale-125 transform transition-transform duration-300"
+            />
           </a>
+
+          {/* YouTube Icon */}
           <a
             href="https://youtube.com/@jkeroro_mk?si=kONouwFGS9t-ti3V"
             target="_blank"
-            rel="noopener noreferrer prefetch"
-            aria-label="Visit Jkeroro on YouTube"
-            className="group-hover:scale-125 transform transition-transform duration-300"
+            rel="noopener noreferrer"
           >
-            <FaYoutube size={25} />
+            <FaYoutube
+              size={25}
+              className="hover:scale-125 transform transition-transform duration-300"
+            />
           </a>
+
+          {/* Twitch Icon */}
           <a
             href="https://www.twitch.tv/jkerorozz"
             target="_blank"
-            rel="noopener noreferrer prefetch"
-            aria-label="Visit Jkeroro on Twitch"
-            className="group-hover:scale-125 transform transition-transform duration-300"
+            rel="noopener noreferrer"
           >
-            <FaTwitch size={25} />
+            <FaTwitch
+              size={25}
+              className="hover:scale-125 transform transition-transform duration-300"
+            />
           </a>
+
+          {/* Spotify Icon */}
           <a
             href="https://open.spotify.com/user/jkeroro"
             target="_blank"
-            rel="noopener noreferrer prefetch"
-            aria-label="Visit Jkeroro on Spotify"
-            className="group-hover:scale-125 transform transition-transform duration-300"
+            rel="noopener noreferrer"
           >
-            <FaSpotify size={25} />
+            <FaSpotify
+              size={25}
+              className="hover:scale-125 transform transition-transform duration-300"
+            />
           </a>
+
+          {/* SoundCloud Icon */}
           <a
             href="https://on.soundcloud.com/B1Fe1ewaen6xbNfv9"
             target="_blank"
-            rel="noopener noreferrer prefetch"
-            aria-label="Visit Jkeroro on SoundCloud"
-            className="group-hover:scale-125 transform transition-transform duration-300"
+            rel="noopener noreferrer"
           >
-            <FaSoundcloud size={25} />
+            <FaSoundcloud
+              size={25}
+              className="hover:scale-125 transform transition-transform duration-300"
+            />
           </a>
         </div>
-      </section>
+      </div>
     </>
   );
-});
+};
 
 export default LinkforBio;

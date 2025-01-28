@@ -26,17 +26,9 @@ export default function RootLayout({
         <Script
           src="https://kit.fontawesome.com/7db96a5cb9.js"
           crossOrigin="anonymous"
-          strategy="beforeInteractive"
         />
-        <Script
-          src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"
-          strategy="beforeInteractive"
-        />
-        <Script
-          src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"
-          strategy="beforeInteractive"
-        />
-        <link rel="preload" as="image" href="/pfp.jpg"></link>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js"></script>
       </head>
       <body className={`${fredoka.className} antialiased`}>
         <VantaBackground />
