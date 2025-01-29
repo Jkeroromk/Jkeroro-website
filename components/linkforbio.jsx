@@ -1,9 +1,10 @@
 'use client'
 
+import { useEffect, useState } from "react";
+import { database, ref, set, onValue } from "../firebase";
 import Image from "next/image";
-import React from "react";
 import { Button } from "./ui/button";
-import { Bell, Share } from "lucide-react";
+import { Eye, Share } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   FaTiktok,
@@ -15,6 +16,23 @@ import {
 } from "react-icons/fa";
 
 const LinkforBio = () => {
+  const [viewerCount, setViewerCount] = useState(0);
+
+  useEffect(() => {
+    const viewerCountRef = ref(database, 'viewerCount');
+
+    // Increment viewer count
+    onValue(viewerCountRef, (snapshot) => {
+      const count = snapshot.val() || 0;
+      set(ref(database, 'viewerCount'), count + 1);
+    });
+
+    // Listen for changes in viewer count
+    onValue(viewerCountRef, (snapshot) => {
+      setViewerCount(snapshot.val());
+    });
+  }, []);
+
   return (
     <>
       <div className="relative flex flex-col items-center mt-8 mx-4">
@@ -29,8 +47,8 @@ const LinkforBio = () => {
         {/* Buttons on top of the image */}
         <div className="absolute top-0 flex gap-[130px] sm:gap-80 mt-3">
           <Button variant="ghost" className="text-white hover:text-black">
-            <Bell />
-            Subscribe
+            <Eye />
+            {viewerCount} Viewers
           </Button>
           <Button variant="ghost" className="text-white hover:text-black">
             <Share />
