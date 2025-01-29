@@ -87,8 +87,26 @@ const MusicPlayer = () => {
   useEffect(() => {
     const audio = audioRef.current;
     audio.src = tracks[currentTrackIndex].src;
-    setIsPlaying(true); // Start playing the new track immediately when the track index changes
-    audio.play().catch((error) => console.error('Error playing audio:', error)); // Play the track right away
+    setIsPlaying(true);
+    audio.play().catch((error) => console.error("Error playing audio:", error));
+  
+    // ✅ Set Media Session Metadata
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: tracks[currentTrackIndex].title,
+        artist: tracks[currentTrackIndex].subtitle || "Unknown Artist",
+        album: "Jkeroro Music",
+        artwork: [
+          { src: "/512.png", sizes: "512x512", type: "image/png" },
+          { src: "/192.png", sizes: "192x192", type: "image/png" }
+        ],
+      });
+  
+      navigator.mediaSession.setActionHandler("play", togglePlayPause);
+      navigator.mediaSession.setActionHandler("pause", togglePlayPause);
+      navigator.mediaSession.setActionHandler("previoustrack", () => skipTrack(-1));
+      navigator.mediaSession.setActionHandler("nexttrack", () => skipTrack(1));
+    }
   }, [currentTrackIndex]);
 
   return (

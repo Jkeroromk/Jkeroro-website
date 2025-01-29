@@ -37,8 +37,10 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
         <link rel="preload" as="image" href="/pfp.jpg"></link>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/192.png" />
       </head>
-      <body className={`${fredoka.className} antialiased`}>
+      <body className={`${fredoka.className} antialiased`} style={{ backgroundColor: "#000000" }}>
         <VantaBackground />
         <MouseTrail />
         {children}
