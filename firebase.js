@@ -1,15 +1,15 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, update, onValue, serverTimestamp, increment } from "firebase/database";
+import { getDatabase, ref, update, serverTimestamp, increment, onValue } from "firebase/database"; // Import onValue here
 
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAYbNpbetNWc7MaKzWHESheYaO48n-ZGu4",
     authDomain: "jkeroro-website.firebaseapp.com",
     projectId: "jkeroro-website",
-    storageBucket: "jkeroro-website.appspot.com", // Fixed the typo here
+    storageBucket: "jkeroro-website.appspot.com",
     messagingSenderId: "518841981397",
     appId: "1:518841981397:web:ac6b8202d7c29dc45ec55c",
-    databaseURL: "https://jkeroro-website-default-rtdb.firebaseio.com/" // Ensure your database URL is correct
+    databaseURL: "https://jkeroro-website-default-rtdb.firebaseio.com/"
 };
 
 // Initialize Firebase
@@ -19,7 +19,7 @@ const database = getDatabase(app);
 // Function to increment viewer count atomically
 const incrementViewCount = () => {
     const countRef = ref(database, 'viewCount');
-    
+
     // Atomically increment the count
     update(countRef, {
         count: increment(1),
@@ -28,4 +28,4 @@ const incrementViewCount = () => {
 };
 
 // Export Firebase functionalities
-export { database, ref, update, onValue, incrementViewCount };
+export { database, ref, update, incrementViewCount, onValue };

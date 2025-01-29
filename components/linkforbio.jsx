@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { database, ref, set, onValue } from "../firebase";
+import { database, ref, incrementViewCount, onValue } from "../firebase"; // Now onValue should work
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Eye, Share } from "lucide-react";
@@ -19,18 +19,18 @@ const LinkforBio = () => {
   const [viewerCount, setViewerCount] = useState(0);
 
   useEffect(() => {
-    const viewerCountRef = ref(database, 'viewerCount');
+    // Increment the viewer count when the component is mounted
+    incrementViewCount();
 
-    // Increment viewer count
+    // Set up listener to fetch the updated count
+    const viewerCountRef = ref(database, 'viewCount');
+
+    // Listen for changes in viewer count and update the state
     onValue(viewerCountRef, (snapshot) => {
-      const count = snapshot.val() || 0;
-      set(ref(database, 'viewerCount'), count + 1);
+      const count = snapshot.val()?.count || 0; // Use ?. to avoid undefined errors
+      setViewerCount(count);
     });
 
-    // Listen for changes in viewer count
-    onValue(viewerCountRef, (snapshot) => {
-      setViewerCount(snapshot.val());
-    });
   }, []);
 
   return (
