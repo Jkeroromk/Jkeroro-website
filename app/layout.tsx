@@ -4,6 +4,7 @@ import "./globals.css";
 import Script from "next/script";
 import MouseTrail from "../components/mousetrail";
 import VantaBackground from "@/components/vantaBackground";
+import { Toaster } from "@/components/ui/toaster";
 
 const fredoka = Fredoka({
   weight: ["400", "500", "600"],
@@ -44,6 +45,7 @@ export default function RootLayout({
         <VantaBackground />
         <MouseTrail />
         {children}
+        <Toaster/>
       </body>
     </html>
   );

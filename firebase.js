@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, update, serverTimestamp, increment, onValue } from "firebase/database"; // Import onValue here
+import { getDatabase, ref, update, increment, onValue, serverTimestamp, push, set } from "firebase/database"; 
 
 // Firebase configuration
 const firebaseConfig = {
@@ -16,16 +16,36 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// Function to increment viewer count atomically
+// ✅ Function to increment viewer count
 const incrementViewCount = () => {
-    const countRef = ref(database, 'viewCount');
+    const countRef = ref(database, "viewCount");
 
-    // Atomically increment the count
     update(countRef, {
         count: increment(1),
-        lastUpdated: serverTimestamp() // Store timestamp of last visit
+        lastUpdated: serverTimestamp()
+    }).then(() => {
+        console.log("Viewer count updated successfully!");
+    }).catch((error) => {
+        console.error("Error updating viewer count:", error);
     });
 };
 
-// Export Firebase functionalities
-export { database, ref, update, incrementViewCount, onValue };
+// ✅ Function to add a comment
+const addComment = (comment) => {
+    if (!comment.trim()) return;
+
+    const commentsRef = ref(database, "comments");
+    const newCommentRef = push(commentsRef);
+
+    set(newCommentRef, {
+        text: comment,
+        timestamp: serverTimestamp()
+    }).then(() => {
+        console.log("Comment added successfully!");
+    }).catch((error) => {
+        console.error("Error adding comment:", error);
+    });
+};
+
+// ✅ Export Firebase functionalities
+export { database, ref, update, increment, onValue, serverTimestamp, addComment, incrementViewCount };
