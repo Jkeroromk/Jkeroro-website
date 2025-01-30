@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, update, increment, onValue, serverTimestamp, push, set } from "firebase/database"; 
+import axios from "axios";
+import { getDatabase, ref, update, increment, onValue, serverTimestamp, push, set } from "firebase/database";
 
-// Firebase configuration
+// ✅ Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAYbNpbetNWc7MaKzWHESheYaO48n-ZGu4",
     authDomain: "jkeroro-website.firebaseapp.com",
@@ -12,25 +13,45 @@ const firebaseConfig = {
     databaseURL: "https://jkeroro-website-default-rtdb.firebaseio.com/"
 };
 
-// Initialize Firebase
+// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// ✅ Function to increment viewer count
-const incrementViewCount = () => {
-    const countRef = ref(database, "viewCount");
-
-    update(countRef, {
-        count: increment(1),
-        lastUpdated: serverTimestamp()
-    }).then(() => {
+// ✅ Function to Increment Viewer Count
+const incrementViewCount = async () => {
+    try {
+        const countRef = ref(database, "viewCount");
+        await update(countRef, {
+            count: increment(1),
+            lastUpdated: serverTimestamp(),
+        });
         console.log("Viewer count updated successfully!");
-    }).catch((error) => {
+    } catch (error) {
         console.error("Error updating viewer count:", error);
-    });
+    }
 };
 
-// ✅ Function to add a comment
+// ✅ Function to Track Visitor Location
+const trackVisitorLocation = async () => {
+    try {
+        const response = await axios.get("https://ipapi.co/json/"); // ✅ Fetch IP & Country
+        const country = response.data.country_name || "Unknown";
+
+        if (!country) return; // ✅ Prevent undefined country errors
+
+        const countryRef = ref(database, `countries/${country}`);
+        await update(countryRef, {
+            count: increment(1),
+            lastUpdated: serverTimestamp(),
+        });
+
+        console.log(`Visitor from ${country} recorded.`);
+    } catch (error) {
+        console.error("Error fetching visitor location:", error);
+    }
+};
+
+// ✅ Function to Add a Comment
 const addComment = (comment) => {
     if (!comment.trim()) return;
 
@@ -48,4 +69,4 @@ const addComment = (comment) => {
 };
 
 // ✅ Export Firebase functionalities
-export { database, ref, update, increment, onValue, serverTimestamp, addComment, incrementViewCount };
+export { database, ref, update, increment, onValue, serverTimestamp, addComment, incrementViewCount, trackVisitorLocation };

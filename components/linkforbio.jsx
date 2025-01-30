@@ -1,7 +1,13 @@
-"use client";
+ "use client";
 
 import { useEffect, useState } from "react";
-import { database, ref, incrementViewCount, onValue, update, serverTimestamp } from "../firebase";
+import {
+  database,
+  ref,
+  incrementViewCount,
+  onValue,
+  trackVisitorLocation,
+} from "../firebase";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Eye, MessageSquare } from "lucide-react";
@@ -27,6 +33,8 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 
+import WorldMapDialog from '@/components/worldMap';
+
 const addComment = (comment) => {
   if (!comment.trim()) return;
 
@@ -42,21 +50,29 @@ const LinkforBio = () => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
   const [error, setError] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
+    // ✅ Track visitor & increment view count once
+    trackVisitorLocation();
     incrementViewCount();
+
+    // ✅ Listen for real-time viewer count updates
     const viewerCountRef = ref(database, "viewCount");
-    onValue(viewerCountRef, (snapshot) => {
+    const unsubscribe = onValue(viewerCountRef, (snapshot) => {
       const count = snapshot.val()?.count || 0;
       setViewerCount(count);
     });
+
+    return () => unsubscribe(); // ✅ Cleanup Firebase listener
   }, []);
 
   useEffect(() => {
+    // ✅ Fetch recent comments
     const commentsRef = ref(database, "comments");
-    onValue(commentsRef, (snapshot) => {
+    const unsubscribe = onValue(commentsRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         const sortedComments = Object.values(data)
@@ -65,6 +81,8 @@ const LinkforBio = () => {
         setComments(sortedComments);
       }
     });
+
+    return () => unsubscribe(); // ✅ Cleanup Firebase listener
   }, []);
 
   const handleCommentSubmit = () => {
@@ -76,7 +94,7 @@ const LinkforBio = () => {
     addComment(comment);
     setComment("");
     setError(false);
-    setDialogOpen(false); // Close dialog after successful submission
+    setDialogOpen(false);
 
     toast({
       title: "Comment Submitted",
@@ -88,33 +106,74 @@ const LinkforBio = () => {
   return (
     <>
       <div className="relative flex flex-col items-center mt-8 mx-4">
-        <Image src="/header.webp" alt="header" height={600} width={600} className="rounded-2xl" />
+        <Image
+          src="/header.webp"
+          alt="header"
+          height={600}
+          width={600}
+          className="rounded-2xl"
+        />
         <div className="absolute top-0 flex gap-[120px] scale-[0.85] sm:gap-80 sm:scale-[1.0] mt-3">
-          <Button variant="ghost" className="text-white hover:text-black">
-            <Eye /> {viewerCount} Viewers
-          </Button>
+        
+        {/* ✅ Viewer Button with World Map Dialog */}
+        <AlertDialog open={mapOpen} onOpenChange={setMapOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" className="text-white hover:text-black">
+                <Eye /> {viewerCount} Viewers
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-[#000] text-white border border-gray-400 shadow-lg scale-[0.9] sm:scale-[1.4]">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-base font-semibold">
+                  Audience Map
+                </AlertDialogTitle>
+              </AlertDialogHeader>
+              <WorldMapDialog/>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="bg-black text-white hover:bg-red-400">
+                  Close
+                </AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          {/* ✅ Comment Button */}
           <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" className="text-white hover:text-black">
                 <MessageSquare /> Comment
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-[#000000] text-white border border-gray-400 shadow-lg">
+            <AlertDialogContent className="bg-[#000000] text-white border border-gray-400 shadow-lg scale-[0.85] sm:scale-[1.0]">
               <AlertDialogHeader>
-                <AlertDialogTitle className="text-lg font-semibold">Most Recent Comments</AlertDialogTitle>
+                <AlertDialogTitle className="text-lg font-semibold">
+                  Most Recent Comments
+                </AlertDialogTitle>
                 <div className="max-h-50 overflow-y-auto mb-4">
                   {comments.length > 0 ? (
                     comments.map((c, index) => (
-                      <p key={index} className="text-white text-sm border-b border-gray-600 pb-2 mb-2">
-                        {c.text}
-                      </p>
+                      <div
+                        key={index}
+                        className="text-white text-sm border-b border-gray-600 pb-2 mb-2"
+                      >
+                        <p>{c.text}</p>
+                        <p className="text-gray-400 text-xs">
+                          {c.timestamp
+                            ? new Date(c.timestamp).toLocaleString()
+                            : "Just now"}
+                        </p>
+                      </div>
                     ))
                   ) : (
                     <p className="text-gray-400 text-sm">No comments yet.</p>
                   )}
                 </div>
               </AlertDialogHeader>
-              <h1 className="text-lg font-semibold">I want to hear from you</h1>
+              <div className="flex items-center justify-center sm:justify-start">
+                <h1 className="text-lg font-semibold">
+                  I want to hear from you
+                </h1>
+              </div>
               <textarea
                 className={`w-full p-2 bg-black text-white border ${
                   error ? "border-red-500" : "border-gray-600"
@@ -127,10 +186,19 @@ const LinkforBio = () => {
                   setError(false);
                 }}
               />
-              {error && <p className="text-red-500 text-sm mt-1">Comment cannot be empty!</p>}
+              {error && (
+                <p className="text-red-500 text-sm mt-1">
+                  Comment cannot be empty!
+                </p>
+              )}
               <AlertDialogFooter>
-                <AlertDialogCancel className="bg-black text-white hover:bg-red-400">Cancel</AlertDialogCancel>
-                <Button className="bg-black text-white hover:bg-blue-500" onClick={handleCommentSubmit}>
+                <AlertDialogCancel className="bg-black text-white hover:bg-red-400">
+                  Cancel
+                </AlertDialogCancel>
+                <Button
+                  className="bg-black text-white hover:bg-blue-500"
+                  onClick={handleCommentSubmit}
+                >
                   Submit
                 </Button>
               </AlertDialogFooter>
@@ -149,12 +217,11 @@ const LinkforBio = () => {
         <h1 className="text-white font-extrabold text-2xl">Jkeroro</h1>
         <h2 className="text-white font-semibold text-sm"> CN ✈️ HK ✈️ US </h2>
         <div className="flex flex-row gap-6 mt-6 text-white">
-          <a href="#" className="hover:scale-[1.5] transition-transform duration-300"><FaTiktok size={25} /></a>
-          <a href="#" className="hover:scale-[1.5] transition-transform duration-300"><FaInstagram size={25} /></a>
-          <a href="#" className="hover:scale-[1.5] transition-transform duration-300"><FaYoutube size={25} /></a>
-          <a href="#" className="hover:scale-[1.5] transition-transform duration-300"><FaTwitch size={25} /></a>
-          <a href="#" className="hover:scale-[1.5] transition-transform duration-300"><FaSpotify size={25} /></a>
-          <a href="#" className="hover:scale-[1.5] transition-transform duration-300"><FaSoundcloud size={25} /></a>
+          {[FaTiktok, FaInstagram, FaYoutube, FaTwitch, FaSpotify, FaSoundcloud].map((Icon, index) => (
+            <a key={index} href="#" className="hover:scale-[1.5] transition-transform duration-300">
+              <Icon size={25} />
+            </a>
+          ))}
         </div>
       </div>
     </>
