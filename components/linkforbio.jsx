@@ -89,7 +89,7 @@ const LinkforBio = () => {
     <>
       <div className="relative flex flex-col items-center mt-8 mx-4">
         <Image src="/header.webp" alt="header" height={600} width={600} className="rounded-2xl" />
-        <div className="absolute top-0 flex gap-[120px] sm:gap-80 mt-3">
+        <div className="absolute top-0 flex gap-[120px] scale-[0.85] sm:gap-80 mt-3">
           <Button variant="ghost" className="text-white hover:text-black">
             <Eye /> {viewerCount} Viewers
           </Button>
