@@ -129,7 +129,7 @@ const LinkforBio = () => {
               </AlertDialogHeader>
               <WorldMapDialog />
               <AlertDialogFooter>
-                <AlertDialogCancel className="bg-black text-white hover:bg-red-400">
+                <AlertDialogCancel className="bg-black text-white hover:bg-red-400 scale-[0.9] sm:scale-[0.75]">
                   Close
                 </AlertDialogCancel>
               </AlertDialogFooter>
