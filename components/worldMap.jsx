@@ -97,6 +97,11 @@ const WorldMapDialog = () => {
             show: false,
           },
         },
+        select:{
+          label:{
+            show:false,
+          }
+        },
         data: Object.keys(countryData).map((country) => ({
           name: country,
           value: countryData[country].count || 0,
