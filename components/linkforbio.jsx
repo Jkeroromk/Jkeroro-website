@@ -111,6 +111,7 @@ const LinkforBio = () => {
           alt="header"
           height={600}
           width={600}
+          priority
           className="rounded-2xl"
         />
         <div className="absolute top-0 flex gap-[120px] scale-[0.85] sm:gap-80 sm:scale-[1.0] mt-3">
