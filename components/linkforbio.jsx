@@ -214,78 +214,115 @@ const LinkforBio = () => {
 
       <div className="flex flex-col items-center mt-12">
         <h1 className="text-white font-extrabold text-2xl">Jkeroro</h1>
-        <h2 className="text-white font-semibold text-sm"> CN ‍✈️ HK ‍✈️ US </h2>
+        <h2 className="text-white font-semibold text-sm"> CN <span className="mx-1">✈️</span> HK  <span className="mx-1">‍✈️</span> US </h2>
 
         <div className="flex flex-row gap-6 mt-6 text-white">
+          {/* TikTok */}
           <a
             href="https://www.tiktok.com/@jkeroromk"
             target="_blank"
             rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center group"
           >
-            <FaTiktok
-              size={25}
-              className="hover:scale-[2.0] transform transition-transform duration-300"
-            />
+            <div className="relative flex flex-col items-center">
+              <FaTiktok
+                size={25}
+                className="hover:scale-[2.0] transform transition-transform duration-300"
+              />
+              <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+                TikTok
+              </span>
+            </div>
           </a>
 
-          {/* Instagram Icon */}
+          {/* Instagram */}
           <a
             href="https://www.instagram.com/jkerorozz"
             target="_blank"
             rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center group"
           >
-            <FaInstagram
-              size={25}
-              className="hover:scale-[2.0] transform transition-transform duration-300"
-            />
+            <div className="relative flex flex-col items-center">
+              <FaInstagram
+                size={25}
+                className="hover:scale-[2.0] transform transition-transform duration-300"
+              />
+              <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+                Instagram
+              </span>
+            </div>
           </a>
 
-          {/* YouTube Icon */}
+          {/* YouTube */}
           <a
             href="https://youtube.com/@jkeroro_mk?si=kONouwFGS9t-ti3V"
             target="_blank"
             rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center group"
           >
-            <FaYoutube
-              size={25}
-              className="hover:scale-[2.0] transform transition-transform duration-300"
-            />
+            <div className="relative flex flex-col items-center">
+              <FaYoutube
+                size={25}
+                className="hover:scale-[2.0] transform transition-transform duration-300"
+              />
+              <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+                YouTube
+              </span>
+            </div>
           </a>
 
-          {/* Twitch Icon */}
+          {/* Twitch */}
           <a
             href="https://www.twitch.tv/jkerorozz"
             target="_blank"
             rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center group"
           >
-            <FaTwitch
-              size={25}
-              className="hover:scale-[2.0] transform transition-transform duration-300"
-            />
+            <div className="relative flex flex-col items-center">
+              <FaTwitch
+                size={25}
+                className="hover:scale-[2.0] transform transition-transform duration-300"
+              />
+              <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+                Twitch
+              </span>
+            </div>
           </a>
 
-          {/* Spotify Icon */}
+          {/* Spotify */}
           <a
             href="https://open.spotify.com/user/jkeroro"
             target="_blank"
             rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center group"
           >
-            <FaSpotify
-              size={25}
-              className="hover:scale-[2.0] transform transition-transform duration-300"
-            />
+            <div className="relative flex flex-col items-center">
+              <FaSpotify
+                size={25}
+                className="hover:scale-[2.0] transform transition-transform duration-300"
+              />
+              <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+                Spotify
+              </span>
+            </div>
           </a>
 
-          {/* SoundCloud Icon */}
+          {/* SoundCloud */}
           <a
             href="https://on.soundcloud.com/B1Fe1ewaen6xbNfv9"
             target="_blank"
             rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center group"
           >
-            <FaSoundcloud
-              size={25}
-              className="hover:scale-[2.0] transform transition-transform duration-300"
-            />
+            <div className="relative flex flex-col items-center">
+              <FaSoundcloud
+                size={25}
+                className="hover:scale-[2.0] transform transition-transform duration-300"
+              />
+              <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+                SoundCloud
+              </span>
+            </div>
           </a>
         </div>
       </div>

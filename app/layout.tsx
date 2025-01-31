@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
-import MouseTrail from "../components/mousetrail";
-import VantaBackground from "@/components/vantaBackground";
 import { Toaster } from "@/components/ui/toaster";
+import dynamic from "next/dynamic";
+
+const MouseTrail = dynamic(() => import("@/components/mousetrail"), {ssr: false,});
+const VantaBackground = dynamic(() => import("@/components/vantaBackground"), {ssr: false, });
 
 const fredoka = Fredoka({
   weight: ["400", "500", "600"],
