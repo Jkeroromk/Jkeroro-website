@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { database, ref, onValue } from "../firebase";
 import ReactECharts from "echarts-for-react";
-import * as echarts from "echarts/core";
 import { registerMap } from "echarts";
 
 const WorldMapDialog = () => {

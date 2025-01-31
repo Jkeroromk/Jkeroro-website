@@ -3,10 +3,6 @@ import { Fredoka } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/toaster";
-import dynamic from "next/dynamic";
-
-const MouseTrail = dynamic(() => import("@/components/mousetrail"), {ssr: false,});
-const VantaBackground = dynamic(() => import("@/components/vantaBackground"), {ssr: false, });
 
 const fredoka = Fredoka({
   weight: ["400", "500", "600"],
@@ -44,8 +40,6 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/192.png" />
       </head>
       <body className={`${fredoka.className} antialiased`} style={{ backgroundColor: "#000000" }}>
-        <VantaBackground />
-        <MouseTrail />
         {children}
         <Toaster/>
       </body>
