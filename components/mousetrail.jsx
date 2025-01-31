@@ -58,7 +58,7 @@ animateCircles();
 
   return (
     <div className="cursor">
-      {[...Array(20)].map((_, index) => (
+      {[...Array(10)].map((_, index) => (
         <div key={index} className="circle"></div>
       ))}
     </div>
