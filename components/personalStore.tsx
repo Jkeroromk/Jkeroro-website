@@ -51,7 +51,7 @@ const PersonalStore = () => {
       </SheetTrigger>
       <SheetContent className="bg-transparent w-[400px] sm:w-[500px]">
         <SheetHeader>
-          <SheetTitle className="text-white">Jkeroro's Store</SheetTitle>
+          <SheetTitle className="text-white">Jkeroro&#39;Store</SheetTitle>
           <SheetDescription className="text-white">
             Welcome to my Cozy Shop!
           </SheetDescription>
