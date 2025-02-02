@@ -5,6 +5,7 @@ import Footer from "@/components/footer";
 import Album from "@/components/album";
 import Interact from "@/components/interact";
 import MouseTrail from "@/components/mousetrail";
+import PersonalStore from "@/components/personalStore";
 
 export default function Home() {
 
@@ -16,6 +17,7 @@ export default function Home() {
         <LinkforBio />
         <MusicPlayer />
         <Tabs />
+        <PersonalStore/>
         <Album />
         <Footer />
       </main>

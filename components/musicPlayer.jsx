@@ -14,20 +14,26 @@ const MusicPlayer = () => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(50); // Default volume level
+  const [volume, setVolume] = useState(50); 
   const [isMuted, setIsMuted] = useState(false);
-  const [showPermissionPrompt, setShowPermissionPrompt] = useState(true); // Show the prompt initially
+  const [showPermissionPrompt, setShowPermissionPrompt] = useState(true); 
   const audioRef = useRef(null);
 
   const handlePermissionResponse = (allow) => {
     if (allow) {
       const audio = audioRef.current;
-      audio.muted = false; // Unmute the audio
-      setIsPlaying(true);  // Set playing state to true
-      audio.play().catch((error) => console.error('Error playing audio:', error));
+      audio.muted = false; 
+      setShowPermissionPrompt(false);
+      setIsPlaying(true);
+  
+      setTimeout(() => {
+        audio.play().catch((error) => console.error('Error playing audio:', error));
+      }, 0);
+    } else {
+      setShowPermissionPrompt(false);
     }
-    setShowPermissionPrompt(false); // Hide the prompt
   };
+  
 
   const togglePlayPause = () => {
     const audio = audioRef.current;
@@ -42,7 +48,7 @@ const MusicPlayer = () => {
   const skipTrack = (direction) => {
     const newIndex = (currentTrackIndex + direction + tracks.length) % tracks.length;
     setCurrentTrackIndex(newIndex);
-    setIsPlaying(true); // Automatically play the next track when skipped
+    setIsPlaying(true); 
   };
 
   const handleTimeUpdate = () => {
@@ -87,18 +93,21 @@ const MusicPlayer = () => {
   useEffect(() => {
     const audio = audioRef.current;
     audio.src = tracks[currentTrackIndex].src;
-    setIsPlaying(true);
-    audio.play().catch((error) => console.error("Error playing audio:", error));
   
-    // ✅ Set Media Session Metadata
-    if ('mediaSession' in navigator) {
+    
+    if (isPlaying) {
+      audio.play().catch((error) => console.error("Error playing audio:", error));
+    }
+  
+    
+    if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: tracks[currentTrackIndex].title,
         artist: tracks[currentTrackIndex].subtitle || "Unknown Artist",
         album: "Jkeroro Music",
         artwork: [
           { src: "/512.png", sizes: "512x512", type: "image/png" },
-          { src: "/192.png", sizes: "192x192", type: "image/png" }
+          { src: "/192.png", sizes: "192x192", type: "image/png" },
         ],
       });
   
@@ -107,7 +116,8 @@ const MusicPlayer = () => {
       navigator.mediaSession.setActionHandler("previoustrack", () => skipTrack(-1));
       navigator.mediaSession.setActionHandler("nexttrack", () => skipTrack(1));
     }
-  }, [currentTrackIndex]);
+  }, [currentTrackIndex, isPlaying]); 
+  
 
   return (
     <div className="flex flex-col items-center justify-center mt-10 w-full">
