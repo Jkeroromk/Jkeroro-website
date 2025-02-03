@@ -7,6 +7,7 @@ import {
   incrementViewCount,
   onValue,
   trackVisitorLocation,
+  addComment, // <-- Import from firebase
 } from "../firebase";
 import Image from "next/image";
 import { Button } from "./ui/button";
@@ -35,16 +36,6 @@ import {
 
 import WorldMapDialog from "@/components/worldMap";
 
-const addComment = (comment) => {
-  if (!comment.trim()) return;
-
-  const commentRef = ref(database, `comments/${Date.now()}`);
-  update(commentRef, {
-    text: comment,
-    timestamp: serverTimestamp(),
-  });
-};
-
 const LinkforBio = () => {
   const [viewerCount, setViewerCount] = useState(0);
   const [comment, setComment] = useState("");
@@ -54,23 +45,23 @@ const LinkforBio = () => {
   const [error, setError] = useState(false);
   const { toast } = useToast();
 
+  // Track visitor & increment view count once
   useEffect(() => {
-    // ✅ Track visitor & increment view count once
     trackVisitorLocation();
     incrementViewCount();
 
-    // ✅ Listen for real-time viewer count updates
+    // Listen for real-time viewer count updates
     const viewerCountRef = ref(database, "viewCount");
     const unsubscribe = onValue(viewerCountRef, (snapshot) => {
       const count = snapshot.val()?.count || 0;
       setViewerCount(count);
     });
 
-    return () => unsubscribe(); // ✅ Cleanup Firebase listener
+    return () => unsubscribe();
   }, []);
 
+  // Fetch recent comments in real-time
   useEffect(() => {
-    // ✅ Fetch recent comments
     const commentsRef = ref(database, "comments");
     const unsubscribe = onValue(commentsRef, (snapshot) => {
       if (snapshot.exists()) {
@@ -82,25 +73,32 @@ const LinkforBio = () => {
       }
     });
 
-    return () => unsubscribe(); // ✅ Cleanup Firebase listener
+    return () => unsubscribe();
   }, []);
 
-  const handleCommentSubmit = () => {
+  // Handle comment submission
+  const handleCommentSubmit = async () => {
     if (!comment.trim()) {
       setError(true);
       return;
     }
 
-    addComment(comment);
-    setComment("");
-    setError(false);
-    setDialogOpen(false);
+    try {
+      // Use the addComment function from firebase.js
+      await addComment(comment);
 
-    toast({
-      title: "Comment Submitted",
-      description: "Your comment has been posted successfully!",
-      action: <ToastAction altText="Close">Close</ToastAction>,
-    });
+      setComment("");
+      setError(false);
+      setDialogOpen(false);
+
+      toast({
+        title: "Comment Submitted",
+        description: "Your comment has been posted successfully!",
+        action: <ToastAction altText="Close">Close</ToastAction>,
+      });
+    } catch (err) {
+      console.error("Error adding comment:", err);
+    }
   };
 
   return (
@@ -115,7 +113,7 @@ const LinkforBio = () => {
           className="rounded-2xl"
         />
         <div className="absolute top-0 flex gap-[120px] scale-[0.85] sm:gap-80 sm:scale-[1.0] mt-3">
-          {/* ✅ Viewer Button with World Map Dialog */}
+          {/* Viewer Button with World Map Dialog */}
           <AlertDialog open={mapOpen} onOpenChange={setMapOpen}>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" className="text-white hover:text-black">
@@ -137,7 +135,7 @@ const LinkforBio = () => {
             </AlertDialogContent>
           </AlertDialog>
 
-          {/* ✅ Comment Button */}
+          {/* Comment Button */}
           <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" className="text-white hover:text-black">
@@ -170,9 +168,7 @@ const LinkforBio = () => {
                 </div>
               </AlertDialogHeader>
               <div className="flex items-center justify-center sm:justify-start">
-                <h1 className="text-lg font-semibold">
-                  I want to hear from you
-                </h1>
+                <h1 className="text-lg font-semibold">I want to hear from you</h1>
               </div>
               <textarea
                 className={`w-full p-2 bg-black text-white border ${
@@ -215,8 +211,9 @@ const LinkforBio = () => {
 
       <div className="flex flex-col items-center mt-12">
         <h1 className="text-white font-extrabold text-2xl">Jkeroro</h1>
-        <h2 className="text-white font-semibold text-sm"> CN <span className="mx-1">✈️</span> HK  <span className="mx-1">‍✈️</span> US </h2>
-
+        <h2 className="text-white font-semibold text-sm">
+          CN <span className="mx-1">✈️</span> HK <span className="mx-1">‍✈️</span> US
+        </h2>
         <div className="flex flex-row gap-6 mt-6 text-white">
           {/* TikTok */}
           <a
@@ -235,7 +232,6 @@ const LinkforBio = () => {
               </span>
             </div>
           </a>
-
           {/* Instagram */}
           <a
             href="https://www.instagram.com/jkerorozz"
@@ -253,7 +249,6 @@ const LinkforBio = () => {
               </span>
             </div>
           </a>
-
           {/* YouTube */}
           <a
             href="https://youtube.com/@jkeroro_mk?si=kONouwFGS9t-ti3V"
@@ -271,7 +266,6 @@ const LinkforBio = () => {
               </span>
             </div>
           </a>
-
           {/* Twitch */}
           <a
             href="https://www.twitch.tv/jkerorozz"
@@ -289,7 +283,6 @@ const LinkforBio = () => {
               </span>
             </div>
           </a>
-
           {/* Spotify */}
           <a
             href="https://open.spotify.com/user/jkeroro"
@@ -307,7 +300,6 @@ const LinkforBio = () => {
               </span>
             </div>
           </a>
-
           {/* SoundCloud */}
           <a
             href="https://on.soundcloud.com/B1Fe1ewaen6xbNfv9"
