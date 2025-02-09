@@ -7,7 +7,7 @@ import {
   incrementViewCount,
   onValue,
   trackVisitorLocation,
-  addComment, // <-- Import from firebase
+  addComment,
 } from "../firebase";
 import Image from "next/image";
 import { Button } from "./ui/button";
@@ -23,7 +23,6 @@ import {
   FaSpotify,
   FaSoundcloud,
 } from "react-icons/fa";
-
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -33,11 +32,12 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-
 import WorldMapDialog from "@/components/worldMap";
 
-const LinkforBio = () => {
+function LinkforBio() {
   const [viewerCount, setViewerCount] = useState(0);
+  const [lastActivity, setLastActivity] = useState(null);
+  const [isOnline, setIsOnline] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -45,12 +45,39 @@ const LinkforBio = () => {
   const [error, setError] = useState(false);
   const { toast } = useToast();
 
-  // Track visitor & increment view count once
+  // Track admin last activity
+  useEffect(() => {
+    const storedTime = localStorage.getItem("adminLastActivity");
+    if (storedTime) {
+      setLastActivity(storedTime);
+
+      // Check if online within last 5 min
+      const lastActiveTime = new Date(storedTime).getTime();
+      const currentTime = Date.now();
+      setIsOnline(currentTime - lastActiveTime < 5 * 60 * 1000);
+    }
+
+    const updateActivity = () => {
+      const now = new Date().toLocaleString();
+      localStorage.setItem("adminLastActivity", now);
+      setLastActivity(now);
+      setIsOnline(true);
+    };
+
+    document.addEventListener("mousemove", updateActivity);
+    document.addEventListener("keydown", updateActivity);
+
+    return () => {
+      document.removeEventListener("mousemove", updateActivity);
+      document.removeEventListener("keydown", updateActivity);
+    };
+  }, []);
+
+  // Track visitor location & increment view count
   useEffect(() => {
     trackVisitorLocation();
     incrementViewCount();
 
-    // Listen for real-time viewer count updates
     const viewerCountRef = ref(database, "viewCount");
     const unsubscribe = onValue(viewerCountRef, (snapshot) => {
       const count = snapshot.val()?.count || 0;
@@ -60,7 +87,7 @@ const LinkforBio = () => {
     return () => unsubscribe();
   }, []);
 
-  // Fetch recent comments in real-time
+  // Fetch recent comments
   useEffect(() => {
     const commentsRef = ref(database, "comments");
     const unsubscribe = onValue(commentsRef, (snapshot) => {
@@ -82,11 +109,8 @@ const LinkforBio = () => {
       setError(true);
       return;
     }
-
     try {
-      // Use the addComment function from firebase.js
       await addComment(comment);
-
       setComment("");
       setError(false);
       setDialogOpen(false);
@@ -113,7 +137,7 @@ const LinkforBio = () => {
           className="rounded-2xl"
         />
         <div className="absolute top-0 flex gap-[120px] scale-[0.85] sm:gap-80 sm:scale-[1.0] mt-3">
-          {/* Viewer Button with World Map Dialog */}
+          {/* Viewer Button */}
           <AlertDialog open={mapOpen} onOpenChange={setMapOpen}>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" className="text-white hover:text-black">
@@ -168,7 +192,9 @@ const LinkforBio = () => {
                 </div>
               </AlertDialogHeader>
               <div className="flex items-center justify-center sm:justify-start">
-                <h1 className="text-lg font-semibold">I want to hear from you</h1>
+                <h1 className="text-lg font-semibold">
+                  I want to hear from you
+                </h1>
               </div>
               <textarea
                 className={`w-full p-2 bg-black text-white border ${
@@ -201,18 +227,37 @@ const LinkforBio = () => {
             </AlertDialogContent>
           </AlertDialog>
         </div>
-        <div className="absolute bottom-[-40px]">
-          <Avatar className="size-20 border ">
+
+        {/* Avatar & Online Indicator in a column */}
+        <div className="absolute bottom-[-45px] flex flex-col gap-y-1 items-center">
+          {/* Avatar */}
+          <Avatar className="size-20 border">
             <AvatarImage src="/pfp.jpg" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
+
+          {/* Status Container */}
+          <div className="flex items-center gap-2 mt-1 mr-2">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isOnline ? "bg-green-500" : "bg-red-500"
+              }`}
+            />
+            <span className="text-white text-xs">
+              {isOnline
+                ? "Online"
+                : `Last Active: ${lastActivity || "Unknown"}`}
+            </span>
+          </div>
         </div>
       </div>
 
+      {/* Social Links */}
       <div className="flex flex-col items-center mt-12">
         <h1 className="text-white font-extrabold text-2xl">Jkeroro</h1>
         <h2 className="text-white font-semibold text-sm">
-          CN <span className="mx-1">✈️</span> HK <span className="mx-1">‍✈️</span> US
+          CN <span className="mx-1">✈️</span> HK{" "}
+          <span className="mx-1">‍✈️</span> US
         </h2>
         <div className="flex flex-row gap-6 mt-6 text-white">
           {/* TikTok */}
@@ -321,6 +366,6 @@ const LinkforBio = () => {
       </div>
     </>
   );
-};
+}
 
 export default LinkforBio;
