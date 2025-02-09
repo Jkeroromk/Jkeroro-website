@@ -144,7 +144,7 @@ function LinkforBio() {
                 <Eye /> {viewerCount} Viewers
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-[#000] text-white border border-gray-400 shadow-lg scale-[0.9] sm:scale-[1.15]">
+            <AlertDialogContent className="bg-[#000] text-white border border-gray-400 shadow-lg scale-[0.9] sm:scale-[1]">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-base font-semibold">
                   Audience Map
