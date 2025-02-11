@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
+  auth,
   database,
   ref,
   incrementViewCount,
@@ -9,6 +10,16 @@ import {
   trackVisitorLocation,
   addComment,
 } from "../firebase";
+
+// ⭐ NEW imports for Google Sign-In
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Eye, MessageSquare } from "lucide-react";
@@ -34,27 +45,63 @@ import {
 } from "@/components/ui/alert-dialog";
 import WorldMapDialog from "@/components/worldMap";
 
-function LinkforBio() {
+export default function LinkforBio() {
+  const [isAdmin, setIsAdmin] = useState(false);
   const [viewerCount, setViewerCount] = useState(0);
+
+  // Admin activity
   const [lastActivity, setLastActivity] = useState(null);
   const [isOnline, setIsOnline] = useState(false);
+
+  // Comments
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
   const [error, setError] = useState(false);
+
+  // Stealth login states
+  const [showLogin, setShowLogin] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
   const { toast } = useToast();
 
-  // Track admin last activity
+  // 1. Watch auth to see if user is admin
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      // If user is the admin email, set isAdmin = true
+      if (user?.email === "zzou2000@gmail.com") {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 2. Secret key combo: SHIFT + ALT + L => show login form
+  useEffect(() => {
+    const handleSecretKeyCombo = (e) => {
+      if (e.shiftKey && e.altKey && e.key === "L") {
+        setShowLogin((prev) => !prev);
+      }
+    };
+    document.addEventListener("keydown", handleSecretKeyCombo);
+    return () => {
+      document.removeEventListener("keydown", handleSecretKeyCombo);
+    };
+  }, []);
+
+  // 3. Track admin last activity if isAdmin
+  useEffect(() => {
+    if (!isAdmin) return;
+
     const storedTime = localStorage.getItem("adminLastActivity");
     if (storedTime) {
       setLastActivity(storedTime);
-
-      // Check if online within last 5 min
-      const lastActiveTime = new Date(storedTime).getTime();
-      const currentTime = Date.now();
-      setIsOnline(currentTime - lastActiveTime < 5 * 60 * 1000);
+      setIsOnline(Date.now() - new Date(storedTime).getTime() < 5 * 60 * 1000);
     }
 
     const updateActivity = () => {
@@ -71,9 +118,9 @@ function LinkforBio() {
       document.removeEventListener("mousemove", updateActivity);
       document.removeEventListener("keydown", updateActivity);
     };
-  }, []);
+  }, [isAdmin]);
 
-  // Track visitor location & increment view count
+  // 4. Track visitor location & increment view count
   useEffect(() => {
     trackVisitorLocation();
     incrementViewCount();
@@ -87,7 +134,7 @@ function LinkforBio() {
     return () => unsubscribe();
   }, []);
 
-  // Fetch recent comments
+  // 5. Fetch recent comments
   useEffect(() => {
     const commentsRef = ref(database, "comments");
     const unsubscribe = onValue(commentsRef, (snapshot) => {
@@ -103,7 +150,7 @@ function LinkforBio() {
     return () => unsubscribe();
   }, []);
 
-  // Handle comment submission
+  // Submit a comment
   const handleCommentSubmit = async () => {
     if (!comment.trim()) {
       setError(true);
@@ -125,6 +172,45 @@ function LinkforBio() {
     }
   };
 
+  // Email/Password login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginError("");
+
+    try {
+      await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      setLoginEmail("");
+      setLoginPassword("");
+      setShowLogin(false);
+    } catch (error) {
+      setLoginError(error.message);
+    }
+  };
+
+  // ⭐ Google Sign-In
+  const handleGoogleSignIn = async () => {
+    setLoginError("");
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      // If user is zzou2000@gmail.com, isAdmin => true
+      setShowLogin(false);
+    } catch (err) {
+      setLoginError(err.message);
+    }
+  };
+
+  // Logout
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
+  // Online status
+  const statusColor = isAdmin && isOnline ? "bg-green-500" : "bg-red-500";
+  const statusText = isAdmin && isOnline
+    ? "Online"
+    : `Last Active: ${lastActivity || "Unknown"}`;
+
   return (
     <>
       <div className="relative flex flex-col items-center mt-8 mx-4">
@@ -136,6 +222,8 @@ function LinkforBio() {
           priority
           className="rounded-2xl"
         />
+
+        {/* Top Buttons: Viewer & Comment */}
         <div className="absolute top-0 flex gap-[120px] scale-[0.85] sm:gap-80 sm:scale-[1.0] mt-3">
           {/* Viewer Button */}
           <AlertDialog open={mapOpen} onOpenChange={setMapOpen}>
@@ -192,9 +280,7 @@ function LinkforBio() {
                 </div>
               </AlertDialogHeader>
               <div className="flex items-center justify-center sm:justify-start">
-                <h1 className="text-lg font-semibold">
-                  I want to hear from you
-                </h1>
+                <h1 className="text-lg font-semibold">I want to hear from you</h1>
               </div>
               <textarea
                 className={`w-full p-2 bg-black text-white border ${
@@ -209,9 +295,7 @@ function LinkforBio() {
                 }}
               />
               {error && (
-                <p className="text-red-500 text-sm mt-1">
-                  Comment cannot be empty!
-                </p>
+                <p className="text-red-500 text-sm mt-1">Comment cannot be empty!</p>
               )}
               <AlertDialogFooter>
                 <AlertDialogCancel className="bg-black text-white hover:bg-red-400">
@@ -228,26 +312,17 @@ function LinkforBio() {
           </AlertDialog>
         </div>
 
-        {/* Avatar & Online Indicator in a column */}
+        {/* Avatar & Online Indicator */}
         <div className="absolute bottom-[-45px] flex flex-col gap-y-1 items-center">
-          {/* Avatar */}
           <Avatar className="size-20 border">
             <AvatarImage src="/pfp.jpg" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
 
-          {/* Status Container */}
+          {/* Online/Offline Badge */}
           <div className="flex items-center gap-2 mt-1 mr-2">
-            <span
-              className={`w-2 h-2 rounded-full ${
-                isOnline ? "bg-green-500" : "bg-red-500"
-              }`}
-            />
-            <span className="text-white text-xs">
-              {isOnline
-                ? "Online"
-                : `Last Active: ${lastActivity || "Unknown"}`}
-            </span>
+            <span className={`w-2 h-2 rounded-full ${statusColor}`} />
+            <span className="text-white text-xs">{statusText}</span>
           </div>
         </div>
       </div>
@@ -364,8 +439,52 @@ function LinkforBio() {
           </a>
         </div>
       </div>
+
+      {/* Stealth Login Form toggled by SHIFT + ALT + L */}
+      {showLogin && !isAdmin && (
+        <div className="flex flex-col items-center mt-12 gap-2">
+          <p className="text-white font-bold">Admin Login</p>
+          <form onSubmit={handleLogin} className="flex flex-col gap-2 w-64">
+            <input
+              className="p-2 text-white rounded bg-transparent"
+              type="email"
+              placeholder="Email"
+              value={loginEmail}
+              onChange={(e) => setLoginEmail(e.target.value)}
+            />
+            <input
+              className="p-2 text-white rounded bg-transparent"
+              type="password"
+              placeholder="Password"
+              value={loginPassword}
+              onChange={(e) => setLoginPassword(e.target.value)}
+            />
+            {loginError && <p className="text-red-500 text-sm">{loginError}</p>}
+            <button className="bg-blue-600 hover:bg-blue-700 py-2 text-white" type="submit">
+              Log In
+            </button>
+          </form>
+
+          {/* ⭐ Google Sign-In Button */}
+          <button
+            onClick={handleGoogleSignIn}
+            className=" text-white py-2 px-4 mt-2 rounded"
+          >
+            Sign in with Google
+          </button>
+        </div>
+      )}
+
+      {isAdmin && (
+        <div className="flex justify-center mt-4">
+          <button
+            className="bg-red-600 hover:bg-red-700 text-white py-2 px-4"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+      )}
     </>
   );
 }
-
-export default LinkforBio;
