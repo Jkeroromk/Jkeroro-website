@@ -352,8 +352,115 @@ export default function LinkforBio() {
           <span className="mx-1">‍✈️</span> US
         </h2>
         <div className="flex flex-row gap-6 mt-6 text-white">
-          {/* (All your social icons) */}
-        </div>
+  {/* TikTok */}
+  <a
+    href="https://www.tiktok.com/@jkeroromk"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex flex-col items-center justify-center group"
+  >
+    <div className="relative flex flex-col items-center">
+      <FaTiktok
+        size={25}
+        className="hover:scale-[2.0] transform transition-transform duration-300"
+      />
+      <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+        TikTok
+      </span>
+    </div>
+  </a>
+
+  {/* Instagram */}
+  <a
+    href="https://www.instagram.com/jkerorozz"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex flex-col items-center justify-center group"
+  >
+    <div className="relative flex flex-col items-center">
+      <FaInstagram
+        size={25}
+        className="hover:scale-[2.0] transform transition-transform duration-300"
+      />
+      <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+        Instagram
+      </span>
+    </div>
+  </a>
+
+  {/* YouTube */}
+  <a
+    href="https://youtube.com/@jkeroro_mk?si=kONouwFGS9t-ti3V"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex flex-col items-center justify-center group"
+  >
+    <div className="relative flex flex-col items-center">
+      <FaYoutube
+        size={25}
+        className="hover:scale-[2.0] transform transition-transform duration-300"
+      />
+      <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+        YouTube
+      </span>
+    </div>
+  </a>
+
+  {/* Twitch */}
+  <a
+    href="https://www.twitch.tv/jkerorozz"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex flex-col items-center justify-center group"
+  >
+    <div className="relative flex flex-col items-center">
+      <FaTwitch
+        size={25}
+        className="hover:scale-[2.0] transform transition-transform duration-300"
+      />
+      <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+        Twitch
+      </span>
+    </div>
+  </a>
+
+  {/* Spotify */}
+  <a
+    href="https://open.spotify.com/user/jkeroro"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex flex-col items-center justify-center group"
+  >
+    <div className="relative flex flex-col items-center">
+      <FaSpotify
+        size={25}
+        className="hover:scale-[2.0] transform transition-transform duration-300"
+      />
+      <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+        Spotify
+      </span>
+    </div>
+  </a>
+
+  {/* SoundCloud */}
+  <a
+    href="https://on.soundcloud.com/B1Fe1ewaen6xbNfv9"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex flex-col items-center justify-center group"
+  >
+    <div className="relative flex flex-col items-center">
+      <FaSoundcloud
+        size={25}
+        className="hover:scale-[2.0] transform transition-transform duration-300"
+      />
+      <span className="absolute top-full mt-4 font-bold text-sm opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none">
+        SoundCloud
+      </span>
+    </div>
+  </a>
+</div>
+
       </div>
 
       {/* Stealth Login Form toggled by SHIFT + ALT + L */}
