@@ -68,57 +68,59 @@ export default function LinkforBio() {
 
   const { toast } = useToast();
 
-  // 1. Watch auth to see if user is admin
+   // 1) Check if the current user is the admin
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      // If user is the admin email, set isAdmin = true
-      if (user?.email === "zzou2000@gmail.com") {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user && user.email === "zzou2000@gmail.com") {
         setIsAdmin(true);
       } else {
         setIsAdmin(false);
       }
     });
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
 
-  // 2. Secret key combo: SHIFT + ALT + L => show login form
-  useEffect(() => {
-    const handleSecretKeyCombo = (e) => {
-      if (e.shiftKey && e.altKey && e.key === "L") {
-        setShowLogin((prev) => !prev);
-      }
-    };
-    document.addEventListener("keydown", handleSecretKeyCombo);
-    return () => {
-      document.removeEventListener("keydown", handleSecretKeyCombo);
-    };
-  }, []);
-
-  // 3. Track admin last activity if isAdmin
+  // 2) If admin, update DB on activity
   useEffect(() => {
     if (!isAdmin) return;
 
-    const storedTime = localStorage.getItem("adminLastActivity");
-    if (storedTime) {
-      setLastActivity(storedTime);
-      setIsOnline(Date.now() - new Date(storedTime).getTime() < 5 * 60 * 1000);
-    }
+    const adminStatusRef = ref(database, "adminStatus");
 
-    const updateActivity = () => {
-      const now = new Date().toLocaleString();
-      localStorage.setItem("adminLastActivity", now);
-      setLastActivity(now);
-      setIsOnline(true);
+    const updateActivityInDB = () => {
+      update(adminStatusRef, {
+        lastActive: Date.now(),
+      }).catch((err) => console.error("Failed to update admin status:", err));
     };
 
-    document.addEventListener("mousemove", updateActivity);
-    document.addEventListener("keydown", updateActivity);
+    document.addEventListener("mousemove", updateActivityInDB);
+    document.addEventListener("keydown", updateActivityInDB);
 
     return () => {
-      document.removeEventListener("mousemove", updateActivity);
-      document.removeEventListener("keydown", updateActivity);
+      document.removeEventListener("mousemove", updateActivityInDB);
+      document.removeEventListener("keydown", updateActivityInDB);
     };
   }, [isAdmin]);
+
+  // 3) Read the adminStatus from DB so everyone sees if admin is online
+  useEffect(() => {
+    const adminStatusRef = ref(database, "adminStatus/lastActive");
+
+    const unsubscribe = onValue(adminStatusRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const lastActiveTime = snapshot.val();
+        const now = Date.now();
+        const isOnlineNow = now - lastActiveTime < 5 * 60 * 1000;
+        setIsOnline(isOnlineNow);
+
+        setLastActivity(new Date(lastActiveTime).toLocaleString());
+      } else {
+        setIsOnline(false);
+        setLastActivity(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // 4. Track visitor location & increment view count
   useEffect(() => {
