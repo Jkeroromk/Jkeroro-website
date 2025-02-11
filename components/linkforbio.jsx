@@ -465,49 +465,52 @@ export default function LinkforBio() {
 
       {/* Stealth Login Form toggled by SHIFT + ALT + L */}
       {showLogin && (
-        <div className="flex flex-col items-center mt-12 gap-2">
-          <p className="text-white font-bold">Admin Login</p>
-          <form onSubmit={handleLogin} className="flex flex-col gap-2 w-64">
-            <input
-              className="p-2 text-white rounded bg-transparent"
-              type="email"
-              placeholder="Email"
-              value={loginEmail}
-              onChange={(e) => setLoginEmail(e.target.value)}
-            />
-            <input
-              className="p-2 text-white rounded bg-transparent"
-              type="password"
-              placeholder="Password"
-              value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-            />
-            {loginError && <p className="text-red-500 text-sm">{loginError}</p>}
-            <button className="bg-blue-600 hover:bg-blue-700 py-2 text-white" type="submit">
-              Log In
-            </button>
-          </form>
+  <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-black p-4 text-white rounded">
+    {!isAdmin ? (
+      // If NOT admin, show the login form
+      <form onSubmit={handleLogin} className="flex flex-col gap-2 w-64">
+        <input
+          className="p-2 text-white rounded bg-transparent"
+          type="email"
+          placeholder="Email"
+          value={loginEmail}
+          onChange={(e) => setLoginEmail(e.target.value)}
+        />
+        <input
+          className="p-2 text-white rounded bg-transparent"
+          type="password"
+          placeholder="Password"
+          value={loginPassword}
+          onChange={(e) => setLoginPassword(e.target.value)}
+        />
+        {loginError && <p className="text-red-500 text-sm">{loginError}</p>}
+        <button
+          className="bg-blue-600 hover:bg-blue-700 py-2 text-white"
+          type="submit"
+        >
+          Log In
+        </button>
 
-          {/* Google Sign-In Button */}
-          <button
-            onClick={handleGoogleSignIn}
-            className="text-white py-2 px-4 mt-2 rounded"
-          >
-            Sign in with Google
-          </button>
-        </div>
-      )}
+        {/* Google Sign-In Button */}
+        <button
+          onClick={handleGoogleSignIn}
+          className="text-white py-2 px-4 mt-2 rounded border border-white"
+        >
+          Sign in with Google
+        </button>
+      </form>
+    ) : (
+      // If admin, show the logout button
+      <button
+        className="bg-red-600 hover:bg-red-700 text-white py-2 px-4"
+        onClick={handleLogout}
+      >
+        Logout
+      </button>
+    )}
+  </div>
+)}
 
-      {isAdmin && (
-        <div className="flex justify-center mt-4">
-          <button
-            className="bg-red-600 hover:bg-red-700 text-white py-2 px-4"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </div>
-      )}
     </>
   );
 }
