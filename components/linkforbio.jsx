@@ -357,7 +357,7 @@ export default function LinkforBio() {
       </div>
 
       {/* Stealth Login Form toggled by SHIFT + ALT + L */}
-      {showLogin && !isAdmin && (
+      {showLogin && (
         <div className="flex flex-col items-center mt-12 gap-2">
           <p className="text-white font-bold">Admin Login</p>
           <form onSubmit={handleLogin} className="flex flex-col gap-2 w-64">
