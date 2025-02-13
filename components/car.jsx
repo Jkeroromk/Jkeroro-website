@@ -270,7 +270,7 @@ export default function Car() {
     <div className="relative w-full max-w-[600px] aspect-[2/1]">
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full bg-black"
+        className="absolute inset-0 w-full h-full bg-black rounded-lg"
       />
     </div>
   );
