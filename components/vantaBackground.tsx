@@ -48,7 +48,7 @@ export default function VantaBackground() {
           color2: 0x000000,
           scale: 1.0,
           scaleMobile: 1.0,
-          quantity: 3.0
+          quantity: 2.0
         });
         setVantaEffect(effect);
       }

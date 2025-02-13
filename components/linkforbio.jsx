@@ -1,31 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-
-// Firebase and DB
 import {
-  auth,
   database,
   ref,
   incrementViewCount,
   onValue,
   trackVisitorLocation,
-  addComment,
-  update,
 } from "../firebase";
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
+import { update, serverTimestamp } from 'firebase/database';
 
-// UI + Icons
+import dynamic from 'next/dynamic'
+
 import { Button } from "./ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Eye, MessageSquare } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import {
@@ -36,6 +25,7 @@ import {
   FaSpotify,
   FaSoundcloud,
 } from "react-icons/fa";
+
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -45,126 +35,52 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
+
 import WorldMapDialog from "@/components/worldMap";
+import LoadingBar from "@/components/loadingbar";
 
-export default function LinkforBio() {
-  // Admin / Auth States
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isOnline, setIsOnline] = useState(false);
-  const [lastActivity, setLastActivity] = useState(null);
+const Car = dynamic(() => import('@/components/car'), {
+  ssr: false,
+  loading: () => <LoadingBar />,
+})
 
-  // Viewer count
+
+const addComment = (comment) => {
+  if (!comment.trim()) return;
+
+  const commentRef = ref(database, `comments/${Date.now()}`);
+  update(commentRef, {
+    text: comment,
+    timestamp: serverTimestamp(),
+  });
+};
+
+const LinkforBio = () => {
   const [viewerCount, setViewerCount] = useState(0);
-
-  // Comments
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
   const [error, setError] = useState(false);
-
-  // Stealth login
-  const [showLogin, setShowLogin] = useState(false);
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
-
   const { toast } = useToast();
 
-  // -----------------------------------
-  // 1) Stealth Login Toggle: Shift+Alt+L
-  // -----------------------------------
   useEffect(() => {
-    const handleSecretKeyCombo = (e) => {
-      if (e.shiftKey && e.altKey && e.key === "L") {
-        setShowLogin((prev) => !prev);
-      }
-    };
-    document.addEventListener("keydown", handleSecretKeyCombo);
-    return () => {
-      document.removeEventListener("keydown", handleSecretKeyCombo);
-    };
-  }, []);
-
-  // -----------------------------------
-  // 2) Check if current user is Admin
-  // -----------------------------------
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user && user.email === "zzou2000@gmail.com") {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false);
-      }
-    });
-    return () => unsub();
-  }, []);
-
-  // -----------------------------------
-  // 3) If Admin, update DB on activity
-  // -----------------------------------
-  useEffect(() => {
-    if (!isAdmin) return;
-    const adminStatusRef = ref(database, "adminStatus");
-
-    const updateActivityInDB = () => {
-      update(adminStatusRef, { lastActive: Date.now() }).catch((err) =>
-        console.error("Failed to update admin status:", err)
-      );
-    };
-
-    document.addEventListener("mousemove", updateActivityInDB);
-    document.addEventListener("keydown", updateActivityInDB);
-
-    return () => {
-      document.removeEventListener("mousemove", updateActivityInDB);
-      document.removeEventListener("keydown", updateActivityInDB);
-    };
-  }, [isAdmin]);
-
-  // -----------------------------------
-  // 4) Read Admin's online status (for display)
-  // -----------------------------------
-  useEffect(() => {
-    const adminStatusRef = ref(database, "adminStatus/lastActive");
-
-    const unsubscribe = onValue(adminStatusRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const lastActiveTime = snapshot.val();
-        const now = Date.now();
-        // If admin hasn't been active for 5 minutes => offline
-        const isOnlineNow = now - lastActiveTime < 5 * 60 * 1000;
-        setIsOnline(isOnlineNow);
-        setLastActivity(new Date(lastActiveTime).toLocaleString());
-      } else {
-        setIsOnline(false);
-        setLastActivity(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  // -----------------------------------
-  // 5) Track location & increment view count
-  // -----------------------------------
-  useEffect(() => {
+    // ✅ Track visitor & increment view count once
     trackVisitorLocation();
     incrementViewCount();
 
+    // ✅ Listen for real-time viewer count updates
     const viewerCountRef = ref(database, "viewCount");
     const unsubscribe = onValue(viewerCountRef, (snapshot) => {
       const count = snapshot.val()?.count || 0;
       setViewerCount(count);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // ✅ Cleanup Firebase listener
   }, []);
 
-  // -----------------------------------
-  // 6) Fetch recent comments
-  // -----------------------------------
   useEffect(() => {
+    // ✅ Fetch recent comments
     const commentsRef = ref(database, "comments");
     const unsubscribe = onValue(commentsRef, (snapshot) => {
       if (snapshot.exists()) {
@@ -175,100 +91,41 @@ export default function LinkforBio() {
         setComments(sortedComments);
       }
     });
-    return () => unsubscribe();
+
+    return () => unsubscribe(); // ✅ Cleanup Firebase listener
   }, []);
 
-  // -----------------------------------
-  // COMMENT SUBMISSION
-  // -----------------------------------
-  const handleCommentSubmit = async () => {
+  const handleCommentSubmit = () => {
     if (!comment.trim()) {
       setError(true);
       return;
     }
-    try {
-      await addComment(comment);
-      setComment("");
-      setError(false);
-      setDialogOpen(false);
 
-      toast({
-        title: "Comment Submitted",
-        description: "Your comment has been posted successfully!",
-        action: <ToastAction altText="Close">Close</ToastAction>,
-      });
-    } catch (err) {
-      console.error("Error adding comment:", err);
-    }
+    addComment(comment);
+    setComment("");
+    setError(false);
+    setDialogOpen(false);
+
+    toast({
+      title: "Comment Submitted",
+      description: "Your comment has been posted successfully!",
+      action: <ToastAction altText="Close">Close</ToastAction>,
+    });
   };
 
-  // -----------------------------------
-  // AUTH HANDLERS
-  // -----------------------------------
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoginError("");
-
-    try {
-      await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
-      setLoginEmail("");
-      setLoginPassword("");
-      setShowLogin(false); // Close login overlay
-    } catch (error) {
-      setLoginError(error.message);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setLoginError("");
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      setShowLogin(false); // Close login overlay
-    } catch (err) {
-      setLoginError(err.message);
-    }
-  };
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    setShowLogin(false); // Close login overlay
-  };
-
-  // -----------------------------------
-  // STATUS BADGE
-  // -----------------------------------
-  const statusColor = isAdmin && isOnline ? "bg-green-500" : "bg-red-500";
-  const statusText = isAdmin && isOnline
-    ? "Online"
-    : `Last Active: ${lastActivity || "Unknown"}`;
-
-  // -----------------------------------
-  // RENDER
-  // -----------------------------------
   return (
     <>
-      {/* Header & Overlay */}
       <div className="relative flex flex-col items-center mt-8 mx-4">
-        <Image
-          src="/header.webp"
-          alt="header"
-          height={600}
-          width={600}
-          priority
-          className="rounded-2xl"
-        />
-
-        {/* Top Right Buttons: Viewers & Comment */}
+        <Car/>
         <div className="absolute top-0 flex gap-[120px] scale-[0.85] sm:gap-80 sm:scale-[1.0] mt-3">
-          {/* Viewer Button with World Map */}
+          {/* ✅ Viewer Button with World Map Dialog */}
           <AlertDialog open={mapOpen} onOpenChange={setMapOpen}>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" className="text-white hover:text-black">
                 <Eye /> {viewerCount} Viewers
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-black text-white border border-gray-400 shadow-lg scale-[0.9] sm:scale-[1]">
+            <AlertDialogContent className="bg-[#000] text-white border border-gray-400 shadow-lg scale-[0.9] sm:scale-[1.15]">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-base font-semibold">
                   Audience Map
@@ -276,21 +133,21 @@ export default function LinkforBio() {
               </AlertDialogHeader>
               <WorldMapDialog />
               <AlertDialogFooter>
-                <AlertDialogCancel className="bg-black text-white hover:bg-red-400">
+                <AlertDialogCancel className="bg-black text-white hover:bg-red-400 scale-[0.9] sm:scale-[0.75]">
                   Close
                 </AlertDialogCancel>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
 
-          {/* Comment Button */}
+          {/* ✅ Comment Button */}
           <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" className="text-white hover:text-black">
                 <MessageSquare /> Comment
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-black text-white border border-gray-400 shadow-lg scale-[0.85] sm:scale-[1.0]">
+            <AlertDialogContent className="bg-[#000000] text-white border border-gray-400 shadow-lg scale-[0.85] sm:scale-[1.0]">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-lg font-semibold">
                   Most Recent Comments
@@ -316,7 +173,9 @@ export default function LinkforBio() {
                 </div>
               </AlertDialogHeader>
               <div className="flex items-center justify-center sm:justify-start">
-                <h1 className="text-lg font-semibold">I want to hear from you</h1>
+                <h1 className="text-lg font-semibold">
+                  I want to hear from you
+                </h1>
               </div>
               <textarea
                 className={`w-full p-2 bg-black text-white border ${
@@ -349,26 +208,18 @@ export default function LinkforBio() {
             </AlertDialogContent>
           </AlertDialog>
         </div>
-
-        {/* Avatar & Online Indicator */}
-        <div className="absolute bottom-[-45px] flex flex-col gap-y-1 items-center">
-          <Avatar className="size-20 border">
+        <div className="absolute bottom-[-40px]">
+          <Avatar className="size-20 border ">
             <AvatarImage src="/pfp.jpg" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <div className="flex items-center gap-2 mt-1 mr-2">
-            <span className={`w-2 h-2 rounded-full ${statusColor}`} />
-            <span className="text-white text-xs">{statusText}</span>
-          </div>
         </div>
       </div>
 
-      {/* Socials */}
       <div className="flex flex-col items-center mt-12">
         <h1 className="text-white font-extrabold text-2xl">Jkeroro</h1>
-        <h2 className="text-white font-semibold text-sm">
-          CN <span className="mx-1">✈️</span> HK <span className="mx-1">✈️</span> US
-        </h2>
+        <h2 className="text-white font-semibold text-sm"> CN <span className="mx-1">✈️</span> HK  <span className="mx-1">‍✈️</span> US </h2>
+
         <div className="flex flex-row gap-6 mt-6 text-white">
           {/* TikTok */}
           <a
@@ -479,59 +330,8 @@ export default function LinkforBio() {
           </a>
         </div>
       </div>
-
-      {/* Stealth Login Form / Logout */}
-      {showLogin && (
-        <div className="mt-8 flex justify-center w-full">
-          {/* Login Panel */}
-          <div className="p-4 text-white border border-gray-400 w-[20rem] bg-transparent rounded">
-            {isAdmin ? (
-              <button
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 w-full rounded"
-              >
-                Logout
-              </button>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <h2 className="text-white font-bold mb-2">Admin Login</h2>
-                <form onSubmit={handleLogin} className="flex flex-col gap-2">
-                  <input
-                    className="p-2 text-white rounded bg-transparent border border-white"
-                    type="email"
-                    placeholder="Email"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                  />
-                  <input
-                    className="p-2 text-white rounded bg-transparent border border-white"
-                    type="password"
-                    placeholder="Password"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                  />
-                  {loginError && (
-                    <p className="text-red-500 text-sm">{loginError}</p>
-                  )}
-                  <button
-                    className="bg-blue-600 hover:bg-blue-700 py-2 text-white rounded"
-                    type="submit"
-                  >
-                    Log In
-                  </button>
-                </form>
-
-                <button
-                  onClick={handleGoogleSignIn}
-                  className="border border-white text-white py-2 px-4 mt-2 rounded"
-                >
-                  Sign in with Google
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </>
   );
-}
+};
+
+export default LinkforBio;

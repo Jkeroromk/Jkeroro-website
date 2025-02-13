@@ -42,15 +42,11 @@ const Tabs = () => {
       </div>
       <Carousel
         className="mt-5 w-full sm:w-[550px]"
-        opts={{ 
-          loop: true,
-          speed: 1,
-        }}
+        opts={{ loop: true }}
         plugins={[
           Autoplay({
-            delay: 2500,
-            duration: 5000,
-            stopOnInteraction: false,
+            delay: 3000,
+            duration: 2000,
           }),
         ]}
       >
