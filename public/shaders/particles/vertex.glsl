@@ -1,6 +1,9 @@
 uniform vec2 uResolution;
 uniform sampler2D uPictureTexture;
 uniform sampler2D uDisplacementTexture;
+uniform float uBasePointSize;
+uniform float uBrightness;
+uniform float uDisplacementStrength;
 
 attribute float aIntensity;
 attribute float aAngle;
@@ -21,9 +24,9 @@ void main()
     );
     displacement = normalize(displacement);
     displacement *= displacementIntensity;
-    displacement *= 3.0;
+    displacement *= uDisplacementStrength;
     displacement *= aIntensity;
-    
+
     newPosition += displacement;
 
     // Final position
@@ -35,10 +38,12 @@ void main()
     // Picture
     float pictureIntensity = texture(uPictureTexture, uv).r;
 
-    // Point size
-    gl_PointSize = 0.065 * pictureIntensity * uResolution.y;
+    // Point size (with control uniform)
+    gl_PointSize = uBasePointSize * pictureIntensity * uResolution.y;
     gl_PointSize *= (1.0 / - viewPosition.z);
+    gl_PointSize = max(1.0, gl_PointSize); // Prevent tiny particles
 
-    // Varyings
-    vColor = vec3(pow(pictureIntensity, 2.0));
+    // Varyings with brightness control
+    vColor = vec3(pow(pictureIntensity, 2.0) * uBrightness);
+    pictureIntensity = max(pictureIntensity, 0.2);
 }
