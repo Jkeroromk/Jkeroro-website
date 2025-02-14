@@ -223,7 +223,7 @@ export default function Car() {
       displacement.canvasCursorPrevious.copy(displacement.canvasCursor);
       const alpha = Math.min(cursorDistance * 0.3, 1);
 
-      const glowSize = displacement.canvas.width * 0.25;
+      const glowSize = displacement.canvas.width * 0.12;
       displacement.context.globalCompositeOperation = "lighten";
       displacement.context.globalAlpha = alpha;
       displacement.context.drawImage(
