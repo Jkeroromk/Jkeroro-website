@@ -209,7 +209,7 @@ export default function Car() {
       }
 
       displacement.context.globalCompositeOperation = "source-over";
-      displacement.context.globalAlpha = 0.04;
+      displacement.context.globalAlpha = 0.025;
       displacement.context.fillRect(
         0,
         0,
