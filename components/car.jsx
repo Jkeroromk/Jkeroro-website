@@ -126,7 +126,7 @@ export default function Car() {
       
         // Dynamically adjust subdivisions based on screen size
         const isMobile = window.innerWidth <= 768; // Tailwind's sm breakpoint
-        const subdivisions = isMobile ? 256 : 1024;
+        const subdivisions = isMobile ? 256 : 768;
       
         const particlesGeometry = new THREE.PlaneGeometry(
           planeWidth,
@@ -167,8 +167,8 @@ export default function Car() {
             ),
             uPictureTexture: new THREE.Uniform(imageTexture),
             uDisplacementTexture: new THREE.Uniform(displacement.texture),
-            uBasePointSize: { value: isMobile ? 0.5 : 0.25 },
-            uBrightness: { value: isMobile ? 0.9 : 0.15 },
+            uBasePointSize: { value: isMobile ? 0.5 : 0.35 },
+            uBrightness: { value: isMobile ? 0.9 : 0.35 },
             uDisplacementStrength: { value: isMobile ? 3 : 3.0 }
           },          
           blending: THREE.AdditiveBlending,
